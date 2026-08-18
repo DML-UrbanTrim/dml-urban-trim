@@ -1,0 +1,8 @@
+{
+  "name": "dml-urban-trim",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DML Urban Trim booking website",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}
