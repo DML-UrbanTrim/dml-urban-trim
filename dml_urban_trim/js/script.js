@@ -160,7 +160,7 @@ if (bookingForm) {
 
   async function startHaircutPayment() {
 
-    const response = await fetch("/api/paystack/initialize", {
+    const response = await fetch("/api/paystack", {
       method: "POST",
 
       headers: {

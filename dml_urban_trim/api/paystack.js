@@ -47,7 +47,6 @@ module.exports = async function handler(req, res) {
       email: String(email).trim().slice(0, 160),
       amount: "700000",
       currency: "NGN",
-
       metadata: {
         service: "Haircut",
         customer_name: String(name).trim().slice(0, 120),
