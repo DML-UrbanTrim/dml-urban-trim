@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       message: "Method not allowed"
@@ -10,7 +10,7 @@ export default async function handler(req, res) {
 
     if (!PAYSTACK_SECRET_KEY) {
       return res.status(500).json({
-        message: "Paystack secret key is not configured."
+        message: "Paystack secret key is not configured on Vercel."
       });
     }
 
@@ -59,7 +59,7 @@ export default async function handler(req, res) {
       }
     };
 
-    const response = await fetch(
+    const paystackResponse = await fetch(
       "https://api.paystack.co/transaction/initialize",
       {
         method: "POST",
@@ -71,9 +71,9 @@ export default async function handler(req, res) {
       }
     );
 
-    const result = await response.json();
+    const result = await paystackResponse.json();
 
-    if (!response.ok || !result.status) {
+    if (!paystackResponse.ok || !result.status) {
       return res.status(400).json({
         message:
           result.message ||
@@ -87,7 +87,7 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error("Paystack initialization error:", error);
+    console.error("Paystack error:", error);
 
     return res.status(500).json({
       message:
@@ -95,4 +95,4 @@ export default async function handler(req, res) {
         "Unable to start payment. Please try again."
     });
   }
-}
+};
