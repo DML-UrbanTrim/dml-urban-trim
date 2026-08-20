@@ -2,9 +2,27 @@ const crypto = require("crypto");
 
 const AMOUNT = 700000;
 const HOLD_MINUTES = 15;
+const OGBOMOSHO_CENTER = { latitude: 8.133, longitude: 4.244 };
+const SERVICE_RADIUS_KM = 20;
 
 function clean(value, max = 500) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
+}
+
+function isInOgbomoshoServiceArea(latitude, longitude) {
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return false;
+
+  const toRadians = value => value * Math.PI / 180;
+  const latitudeDifference = toRadians(latitude - OGBOMOSHO_CENTER.latitude);
+  const longitudeDifference = toRadians(longitude - OGBOMOSHO_CENTER.longitude);
+  const a =
+    Math.sin(latitudeDifference / 2) ** 2 +
+    Math.cos(toRadians(OGBOMOSHO_CENTER.latitude)) *
+    Math.cos(toRadians(latitude)) *
+    Math.sin(longitudeDifference / 2) ** 2;
+  const distance = 2 * 6371 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return distance <= SERVICE_RADIUS_KM;
 }
 
 async function database(path, options = {}) {
@@ -46,6 +64,9 @@ module.exports = async function handler(req, res) {
     }
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
       return res.status(400).json({ message: "Please select your location on the map." });
+    }
+    if (!isInOgbomoshoServiceArea(latitude, longitude)) {
+      return res.status(400).json({ message: "We currently serve Ogbomosho only. Please select a location within Ogbomosho." });
     }
 
     await database(`appointments?status=eq.pending&pending_expires_at=lt.${encodeURIComponent(new Date().toISOString())}`, { method: "DELETE" });

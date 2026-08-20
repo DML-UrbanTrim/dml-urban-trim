@@ -135,6 +135,52 @@ if (bookingForm) {
   let bookingMap = null;
   let locationMarker = null;
 
+  const ogbomoshoCenter = [8.133, 4.244];
+  const serviceRadiusKm = 20;
+
+  function isInOgbomoshoServiceArea(latitude, longitude) {
+
+    const toRadians = value => value * Math.PI / 180;
+    const latitudeDifference = toRadians(latitude - ogbomoshoCenter[0]);
+    const longitudeDifference = toRadians(longitude - ogbomoshoCenter[1]);
+    const a =
+      Math.sin(latitudeDifference / 2) ** 2 +
+      Math.cos(toRadians(ogbomoshoCenter[0])) *
+      Math.cos(toRadians(latitude)) *
+      Math.sin(longitudeDifference / 2) ** 2;
+    const distance = 2 * 6371 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return Number.isFinite(latitude) &&
+      Number.isFinite(longitude) &&
+      distance <= serviceRadiusKm;
+  }
+
+  // Ogbomosho city centre. Increase this only if you expand your service area.
+  const ogbomoshoCenter = [8.133, 4.244];
+  const serviceRadiusKm = 20;
+
+  function distanceFromOgbomosho(latitude, longitude) {
+
+    const toRadians = value => value * Math.PI / 180;
+    const earthRadiusKm = 6371;
+    const latitudeDifference = toRadians(latitude - ogbomoshoCenter[0]);
+    const longitudeDifference = toRadians(longitude - ogbomoshoCenter[1]);
+    const a =
+      Math.sin(latitudeDifference / 2) ** 2 +
+      Math.cos(toRadians(ogbomoshoCenter[0])) *
+      Math.cos(toRadians(latitude)) *
+      Math.sin(longitudeDifference / 2) ** 2;
+
+    return 2 * earthRadiusKm * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function isInOgbomoshoServiceArea(latitude, longitude) {
+
+    return Number.isFinite(latitude) &&
+      Number.isFinite(longitude) &&
+      distanceFromOgbomosho(latitude, longitude) <= serviceRadiusKm;
+  }
+
 
   /* ================================
      DATE
@@ -335,6 +381,14 @@ if (bookingForm) {
       return;
     }
 
+    if (!isInOgbomoshoServiceArea(latitude, longitude)) {
+
+      locationStatus.textContent =
+        "We currently serve Ogbomosho only. Please select a location within Ogbomosho.";
+
+      return;
+    }
+
 
     const latLng = [
       latitude,
@@ -506,16 +560,6 @@ if (bookingForm) {
 
       return;
     }
-
-
-    /*
-     * Ogbomosho approximate center.
-     */
-
-    const ogbomoshoCenter = [
-      8.133,
-      4.244
-    ];
 
 
     bookingMap = L.map(
@@ -812,6 +856,17 @@ if (bookingForm) {
 
         bookingMessage.textContent =
           "Please select your exact location on the map or use the current location button.";
+
+        return;
+      }
+
+      if (!isInOgbomoshoServiceArea(
+        Number(customerLatitude.value),
+        Number(customerLongitude.value)
+      )) {
+
+        bookingMessage.textContent =
+          "We currently serve Ogbomosho only. Please select a location within Ogbomosho.";
 
         return;
       }
