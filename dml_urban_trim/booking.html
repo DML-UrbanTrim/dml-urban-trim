@@ -1,85 +1,297 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Book a DML Urban Trim mobile haircut appointment in Ogbomosho.">
+
+<meta
+  name="description"
+  content="Book a DML Urban Trim mobile haircut appointment in Ogbomosho."
+>
+
 <title>Book an Appointment | DML Urban Trim</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+>
+
+<!-- Leaflet map -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIINfQ3P1qXfT1e0m3fJ3M0k8M5n4z5f0M="
+  crossorigin=""
+>
+
 <link rel="stylesheet" href="css/style.css">
+
+<style>
+  /* Map styling */
+  .location-map-wrap {
+    margin-top: 18px;
+  }
+
+  .location-map {
+    width: 100%;
+    height: 360px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .location-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .location-button {
+    border: 1px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: inherit;
+    padding: 12px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font: inherit;
+  }
+
+  .location-button:hover {
+    opacity: 0.85;
+  }
+
+  .location-status {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    opacity: 0.75;
+    line-height: 1.5;
+  }
+
+  .location-coordinates {
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    .location-map {
+      height: 300px;
+    }
+  }
+</style>
+
 </head>
+
 <body>
 
 <header class="site-header">
+
   <div class="container nav-wrap">
-    <a class="brand" href="index.html"><img src="assets/652977.png" alt="DML Urban Trim"></a>
-    <button class="menu-toggle" aria-label="Open menu"><span></span><span></span><span></span></button>
+
+    <a class="brand" href="index.html">
+      <img src="assets/652977.png" alt="DML Urban Trim">
+    </a>
+
+    <button
+      class="menu-toggle"
+      aria-label="Open menu"
+      aria-expanded="false"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
     <nav class="site-nav">
+
       <a href="index.html">Home</a>
+
       <a href="services.html">Services</a>
+
       <a href="gallery.html">Our Work</a>
+
       <a href="about.html">About</a>
+
       <a href="contact.html">Contact</a>
-      <a class="nav-book active-book" href="booking.html">Book Now</a>
+
+      <a
+        class="nav-book active-book"
+        href="booking.html"
+      >
+        Book Now
+      </a>
+
     </nav>
+
   </div>
+
 </header>
 
+
 <main>
+
 <section class="page-hero compact">
+
   <div class="container reveal">
-    <p class="eyebrow"><span></span> BOOK AN APPOINTMENT</p>
-    <h1>Your next cut<br><em>starts here.</em></h1>
-    <p>Choose your service, pick a date and time, then tell us where to meet you in Ogbomosho.</p>
+
+    <p class="eyebrow">
+      <span></span> BOOK AN APPOINTMENT
+    </p>
+
+    <h1>
+      Your next cut<br>
+      <em>starts here.</em>
+    </h1>
+
+    <p>
+      Choose your service, pick a date and time,
+      then tell us where to meet you in Ogbomosho.
+    </p>
+
   </div>
+
 </section>
 
+
 <section class="section booking-page">
+
   <div class="container booking-layout">
 
-    <form class="booking-form reveal" id="bookingForm" novalidate>
+
+    <!-- BOOKING FORM -->
+
+    <form
+      class="booking-form reveal"
+      id="bookingForm"
+      novalidate
+    >
+
       <div class="booking-form-head">
-        <p class="eyebrow"><span></span> RESERVE YOUR SLOT</p>
-        <h2>Let's get you <em>trimmed.</em></h2>
-        <p>Appointments are available every day from 9:00 AM to 5:00 PM.</p>
+
+        <p class="eyebrow">
+          <span></span> RESERVE YOUR SLOT
+        </p>
+
+        <h2>
+          Let's get you <em>trimmed.</em>
+        </h2>
+
+        <p>
+          Appointments are available every day
+          from 9:00 AM to 5:00 PM.
+        </p>
+
       </div>
 
+
+      <!-- SERVICE -->
+
       <fieldset class="booking-fieldset">
-        <legend><span>01</span> Choose a service</legend>
+
+        <legend>
+          <span>01</span> Choose a service
+        </legend>
+
 
         <div class="service-choice-grid">
-          <button type="button" class="service-choice" data-service="Haircut" data-price="7000" aria-pressed="false">
+
+          <button
+            type="button"
+            class="service-choice"
+            data-service="Haircut"
+            data-price="7000"
+            aria-pressed="false"
+          >
+
             <span class="choice-check">✓</span>
+
             <strong>Haircut</strong>
-            <small>Professional mobile haircut</small>
+
+            <small>
+              Professional mobile haircut
+            </small>
+
             <b>₦7,000</b>
+
           </button>
 
-          <button type="button" class="service-choice" data-service="Hair Tinting" data-price="0" aria-pressed="false">
+
+          <button
+            type="button"
+            class="service-choice"
+            data-service="Hair Tinting"
+            data-price="0"
+            aria-pressed="false"
+          >
+
             <span class="choice-check">✓</span>
+
             <strong>Hair Tinting</strong>
-            <small>Price depends on hair size</small>
+
+            <small>
+              Price depends on hair size
+            </small>
+
             <b>Contact for price</b>
+
           </button>
+
         </div>
+
       </fieldset>
 
+
+      <!-- DATE AND TIME -->
+
       <fieldset class="booking-fieldset">
-        <legend><span>02</span> Pick your date & time</legend>
+
+        <legend>
+          <span>02</span> Pick your date & time
+        </legend>
+
 
         <div class="form-grid two">
-          <div class="form-group">
-            <label for="bookingDate">Appointment date</label>
-            <input type="date" id="bookingDate" name="date" required>
-            <small class="field-help">Choose any available day.</small>
-          </div>
 
           <div class="form-group">
-            <label for="bookingTime">Appointment time</label>
-            <select id="bookingTime" name="time" required>
-              <option value="">Select a time</option>
+
+            <label for="bookingDate">
+              Appointment date
+            </label>
+
+            <input
+              type="date"
+              id="bookingDate"
+              name="date"
+              required
+            >
+
+            <small class="field-help">
+              Choose any available day.
+            </small>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="bookingTime">
+              Appointment time
+            </label>
+
+            <select
+              id="bookingTime"
+              name="time"
+              required
+            >
+
+              <option value="">
+                Select a time
+              </option>
+
               <option value="9:00 AM">9:00 AM</option>
               <option value="10:00 AM">10:00 AM</option>
               <option value="11:00 AM">11:00 AM</option>
@@ -89,90 +301,387 @@
               <option value="3:00 PM">3:00 PM</option>
               <option value="4:00 PM">4:00 PM</option>
               <option value="5:00 PM">5:00 PM</option>
+
             </select>
-            <small class="field-help">Available hours: 9 AM – 5 PM.</small>
+
+            <small class="field-help">
+              Available hours: 9 AM – 5 PM.
+            </small>
+
           </div>
+
         </div>
+
       </fieldset>
+
+
+      <!-- CUSTOMER DETAILS -->
 
       <fieldset class="booking-fieldset">
-        <legend><span>03</span> Your details</legend>
+
+        <legend>
+          <span>03</span> Your details
+        </legend>
+
 
         <div class="form-grid two">
-          <div class="form-group">
-            <label for="customerName">Full name</label>
-            <input type="text" id="customerName" name="name" placeholder="Your full name" autocomplete="name" required>
-          </div>
 
           <div class="form-group">
-            <label for="customerPhone">Phone / WhatsApp</label>
-            <input type="tel" id="customerPhone" name="phone" placeholder="0801 234 5678" autocomplete="tel" required>
+
+            <label for="customerName">
+              Full name
+            </label>
+
+            <input
+              type="text"
+              id="customerName"
+              name="name"
+              placeholder="Your full name"
+              autocomplete="name"
+              required
+            >
+
           </div>
 
+
           <div class="form-group">
-            <label for="customerEmail">Email address</label>
-            <input type="email" id="customerEmail" name="email" placeholder="you@example.com" autocomplete="email" required>
+
+            <label for="customerPhone">
+              Phone / WhatsApp
+            </label>
+
+            <input
+              type="tel"
+              id="customerPhone"
+              name="phone"
+              placeholder="0801 234 5678"
+              autocomplete="tel"
+              required
+            >
+
           </div>
+
+
+          <div class="form-group">
+
+            <label for="customerEmail">
+              Email address
+            </label>
+
+            <input
+              type="email"
+              id="customerEmail"
+              name="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              required
+            >
+
+          </div>
+
         </div>
 
-        <div class="form-group" id="tintColorGroup" hidden>
-          <label for="tintColor">What color would you like?</label>
-          <input type="text" id="tintColor" name="tintColor" placeholder="e.g. dark brown, burgundy, honey blonde">
-          <small class="field-help">Tell us the tint color you want so we can confirm the price with you.</small>
+
+        <!-- TINT COLOR -->
+
+        <div
+          class="form-group"
+          id="tintColorGroup"
+          hidden
+        >
+
+          <label for="tintColor">
+            What color would you like?
+          </label>
+
+          <input
+            type="text"
+            id="tintColor"
+            name="tintColor"
+            placeholder="e.g. dark brown, burgundy, honey blonde"
+          >
+
+          <small class="field-help">
+            Tell us the tint color you want
+            so we can confirm the price with you.
+          </small>
+
         </div>
+
+
+        <!-- LOCATION -->
 
         <div class="form-group">
-          <label for="customerAddress">Your location in Ogbomosho</label>
-          <input type="text" id="customerAddress" name="address" placeholder="Area, street or landmark" autocomplete="street-address" required>
-          <small class="field-help">DML Urban Trim provides mobile service within Ogbomosho.</small>
+
+          <label for="customerAddress">
+            Your location in Ogbomosho
+          </label>
+
+          <input
+            type="text"
+            id="customerAddress"
+            name="address"
+            placeholder="Area, street or landmark"
+            autocomplete="street-address"
+            required
+          >
+
+          <small class="field-help">
+            Enter your area, street or landmark,
+            then select your exact location on the map.
+          </small>
+
+
+          <div class="location-map-wrap">
+
+            <div class="location-actions">
+
+              <button
+                type="button"
+                class="location-button"
+                id="useLocationButton"
+              >
+                📍 Use My Current Location
+              </button>
+
+            </div>
+
+
+            <div
+              id="bookingMap"
+              class="location-map"
+              aria-label="Select your appointment location on the map"
+            ></div>
+
+
+            <small
+              id="locationStatus"
+              class="location-status"
+            >
+              Loading map...
+            </small>
+
+
+            <!-- Hidden coordinates -->
+
+            <input
+              type="hidden"
+              id="customerLatitude"
+              name="latitude"
+            >
+
+            <input
+              type="hidden"
+              id="customerLongitude"
+              name="longitude"
+            >
+
+          </div>
+
         </div>
 
+
+        <!-- NOTE -->
+
         <div class="form-group">
-          <label for="bookingNote">Anything we should know? <span>(optional)</span></label>
-          <textarea id="bookingNote" name="note" rows="4" placeholder="For example: preferred haircut style, parking information, or anything else..."></textarea>
+
+          <label for="bookingNote">
+
+            Anything we should know?
+
+            <span>(optional)</span>
+
+          </label>
+
+          <textarea
+            id="bookingNote"
+            name="note"
+            rows="4"
+            placeholder="For example: preferred haircut style, parking information, or anything else..."
+          ></textarea>
+
         </div>
+
       </fieldset>
 
+
+      <!-- SUBMIT -->
+
       <div class="booking-action">
-        <button class="btn btn-gold booking-submit" type="submit">
-          Continue <span>→</span>
+
+        <button
+          class="btn btn-gold booking-submit"
+          type="submit"
+        >
+
+          Continue
+
+          <span>→</span>
+
         </button>
-        <p id="bookingMessage" class="booking-message" role="status" aria-live="polite"></p>
+
+
+        <p
+          id="bookingMessage"
+          class="booking-message"
+          role="status"
+          aria-live="polite"
+        ></p>
+
       </div>
+
     </form>
 
-    <aside class="booking-summary reveal" id="bookingSummary">
-      <p class="eyebrow"><span></span> YOUR BOOKING</p>
-      <h2 id="summaryService">Choose a service</h2>
 
-      <div class="summary-line"><span>Service</span><strong id="summaryServiceLine">Not selected</strong></div>
-      <div class="summary-line"><span>Date</span><strong id="summaryDate">Not selected</strong></div>
-      <div class="summary-line"><span>Time</span><strong id="summaryTime">Not selected</strong></div>
-      <div class="summary-line"><span>Area</span><strong>Ogbomosho</strong></div>
-      <div class="summary-line"><span>Transport</span><strong>Included</strong></div>
+    <!-- BOOKING SUMMARY -->
 
-      <div class="summary-total">
-        <span>Total</span>
-        <strong id="summaryPrice">Not selected</strong>
+    <aside
+      class="booking-summary reveal"
+      id="bookingSummary"
+    >
+
+      <p class="eyebrow">
+        <span></span> YOUR BOOKING
+      </p>
+
+      <h2 id="summaryService">
+        Choose a service
+      </h2>
+
+
+      <div class="summary-line">
+
+        <span>Service</span>
+
+        <strong id="summaryServiceLine">
+          Not selected
+        </strong>
+
       </div>
 
-      <p class="summary-status" id="summaryStatus">Choose a service to continue.</p>
-      <p class="small-note">Haircut bookings continue to secure payment. Hair tinting requests are sent to WhatsApp so the final price can be confirmed.</p>
+
+      <div class="summary-line">
+
+        <span>Date</span>
+
+        <strong id="summaryDate">
+          Not selected
+        </strong>
+
+      </div>
+
+
+      <div class="summary-line">
+
+        <span>Time</span>
+
+        <strong id="summaryTime">
+          Not selected
+        </strong>
+
+      </div>
+
+
+      <div class="summary-line">
+
+        <span>Area</span>
+
+        <strong>
+          Ogbomosho
+        </strong>
+
+      </div>
+
+
+      <div class="summary-line">
+
+        <span>Transport</span>
+
+        <strong>
+          Included
+        </strong>
+
+      </div>
+
+
+      <div class="summary-total">
+
+        <span>Total</span>
+
+        <strong id="summaryPrice">
+          Not selected
+        </strong>
+
+      </div>
+
+
+      <p
+        class="summary-status"
+        id="summaryStatus"
+      >
+        Choose a service to continue.
+      </p>
+
+
+      <p class="small-note">
+
+        Haircut bookings continue to secure payment.
+        Hair tinting requests are sent to WhatsApp
+        so the final price can be confirmed.
+
+      </p>
+
     </aside>
 
   </div>
+
 </section>
+
 </main>
 
+
 <footer class="site-footer">
+
   <div class="container footer-grid">
-    <img src="assets/652977.png" alt="DML Urban Trim">
-    <p>© <span class="year"></span> DML Urban Trim. All rights reserved.</p>
-    <a href="index.html">Home ↑</a>
+
+    <img
+      src="assets/652977.png"
+      alt="DML Urban Trim"
+    >
+
+    <p>
+      © <span class="year"></span>
+      DML Urban Trim.
+      All rights reserved.
+    </p>
+
+    <a href="index.html">
+      Home ↑
+    </a>
+
   </div>
+
 </footer>
 
+
+<!-- Leaflet map JavaScript -->
+
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
+
+
+<!-- Paystack -->
+
 <script src="https://js.paystack.co/v2/inline.js"></script>
+
+
+<!-- Your website JavaScript -->
+
 <script src="js/script.js"></script>
+
 </body>
 </html>
+```

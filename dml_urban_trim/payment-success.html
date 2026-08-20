@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Confirm your DML Urban Trim booking payment.">
+  <title>Confirming Payment | DML Urban Trim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <section class="page-hero compact">
+      <div class="container reveal visible">
+        <p class="eyebrow"><span></span> PAYMENT STATUS</p>
+        <h1 id="paymentTitle">Confirming your <em>payment.</em></h1>
+        <p id="paymentMessage" role="status" aria-live="polite">Please wait while we securely confirm your booking.</p>
+        <p id="paymentReference" class="small-note"></p>
+        <p><a class="btn btn-gold" href="index.html">Return home <span>→</span></a></p>
+      </div>
+    </section>
+  </main>
+  <script>
+    const title = document.getElementById("paymentTitle");
+    const message = document.getElementById("paymentMessage");
+    const referenceElement = document.getElementById("paymentReference");
+    const reference = new URLSearchParams(window.location.search).get("reference");
+
+    async function confirmPayment() {
+      if (!reference) {
+        title.innerHTML = "We could not find your <em>payment.</em>";
+        message.textContent = "The payment reference is missing. Please contact DML Urban Trim with your payment details.";
+        return;
+      }
+      referenceElement.textContent = `Reference: ${reference}`;
+
+      try {
+        const response = await fetch(`/api/paystack-verify?reference=${encodeURIComponent(reference)}`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || "Payment could not be confirmed yet.");
+
+        title.innerHTML = "Your booking is <em>confirmed.</em>";
+        message.textContent = `Thank you. Your Haircut appointment is confirmed for ${data.appointment.appointment_date} at ${data.appointment.appointment_time}.`;
+      } catch (error) {
+        title.innerHTML = "Payment needs <em>confirmation.</em>";
+        message.textContent = `${error.message} Do not pay again; refresh this page in a moment or contact us with your reference.`;
+      }
+    }
+    confirmPayment();
+  </script>
+</body>
+</html>

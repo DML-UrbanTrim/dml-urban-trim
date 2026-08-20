@@ -1,97 +1,94 @@
+const crypto = require("crypto");
+
+const AMOUNT = 700000;
+const HOLD_MINUTES = 15;
+
+function clean(value, max = 500) {
+  return typeof value === "string" ? value.trim().slice(0, max) : "";
+}
+
+async function database(path, options = {}) {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error("Booking database is not configured on the server.");
+
+  const response = await fetch(`${url.replace(/\/$/, "")}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    }
+  });
+  if (!response.ok) throw new Error(await response.text());
+  return response;
+}
+
 module.exports = async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({
-      message: "Method not allowed"
-    });
-  }
+  if (req.method !== "POST") return res.status(405).json({ message: "Method not allowed" });
 
   try {
-    const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+    const secret = process.env.PAYSTACK_SECRET_KEY;
+    const body = req.body || {};
+    const email = clean(body.email, 160);
+    const name = clean(body.name, 120);
+    const phone = clean(body.phone, 40);
+    const address = clean(body.address, 300);
+    const date = clean(body.date, 10);
+    const time = clean(body.time, 30);
+    const latitude = Number(body.latitude);
+    const longitude = Number(body.longitude);
 
-    if (!PAYSTACK_SECRET_KEY) {
-      return res.status(500).json({
-        message: "Paystack secret key is not configured on Vercel."
-      });
+    if (!secret) throw new Error("Paystack secret key is not configured on the server.");
+    if (body.service !== "Haircut" || !email.includes("@") || !name || !phone || !address || !date || !time) {
+      return res.status(400).json({ message: "Please complete all required booking details." });
+    }
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return res.status(400).json({ message: "Please select your location on the map." });
     }
 
-    const {
-      service,
-      email,
-      name,
-      phone,
-      address,
-      date,
-      time,
-      note
-    } = req.body || {};
+    await database(`appointments?status=eq.pending&pending_expires_at=lt.${encodeURIComponent(new Date().toISOString())}`, { method: "DELETE" });
 
-    if (service !== "Haircut") {
-      return res.status(400).json({
-        message: "Only Haircut bookings can be paid for here."
-      });
-    }
+    const reference = `dml_${crypto.randomUUID().replace(/-/g, "")}`;
+    const pendingExpiresAt = new Date(Date.now() + HOLD_MINUTES * 60 * 1000).toISOString();
+    const protocol = req.headers["x-forwarded-proto"] || "https";
+    const siteUrl = (process.env.SITE_URL || `${protocol}://${req.headers.host}`).replace(/\/$/, "");
+    const callbackUrl = `${siteUrl}/payment-success.html?reference=${encodeURIComponent(reference)}`;
+    await database("appointments", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
+        reference, service: "Haircut", customer_name: name, customer_email: email,
+        customer_phone: phone, address, latitude, longitude, appointment_date: date,
+        appointment_time: time, note: clean(body.note), amount: AMOUNT,
+        status: "pending", pending_expires_at: pendingExpiresAt
+      })
+    });
 
-    if (!email || !email.includes("@")) {
-      return res.status(400).json({
-        message: "Please enter a valid email address."
-      });
-    }
-
-    if (!name || !phone || !address || !date || !time) {
-      return res.status(400).json({
-        message: "Please complete all required booking details."
-      });
-    }
-
-    const payload = {
-      email: String(email).trim().slice(0, 160),
-      amount: "700000",
-      currency: "NGN",
-      metadata: {
-        service: "Haircut",
-        customer_name: String(name).trim().slice(0, 120),
-        phone: String(phone).trim().slice(0, 40),
-        address: String(address).trim().slice(0, 300),
-        appointment_date: String(date).trim().slice(0, 20),
-        appointment_time: String(time).trim().slice(0, 30),
-        note: String(note || "").trim().slice(0, 500)
-      }
-    };
-
-    const paystackResponse = await fetch(
-      "https://api.paystack.co/transaction/initialize",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      }
-    );
-
+    const paystackResponse = await fetch("https://api.paystack.co/transaction/initialize", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${secret}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        amount: String(AMOUNT),
+        currency: "NGN",
+        reference,
+        callback_url: callbackUrl,
+        metadata: { appointment_reference: reference }
+      })
+    });
     const result = await paystackResponse.json();
 
     if (!paystackResponse.ok || !result.status) {
-      return res.status(400).json({
-        message:
-          result.message ||
-          "Paystack could not initialize the transaction."
-      });
+      await database(`appointments?reference=eq.${encodeURIComponent(reference)}`, { method: "PATCH", body: JSON.stringify({ status: "payment_failed" }) });
+      throw new Error(result.message || "Paystack could not initialize the transaction.");
     }
 
-    return res.status(200).json({
-      accessCode: result.data.access_code,
-      reference: result.data.reference
-    });
-
+    return res.status(200).json({ accessCode: result.data.access_code, reference });
   } catch (error) {
-    console.error("Paystack error:", error);
-
-    return res.status(500).json({
-      message:
-        error.message ||
-        "Unable to start payment. Please try again."
-    });
+    console.error("Booking initialization error:", error);
+    const unavailable = String(error.message).includes("duplicate key");
+    return res.status(unavailable ? 409 : 500).json({ message: unavailable ? "That appointment time is no longer available." : error.message || "Unable to start payment." });
   }
 };

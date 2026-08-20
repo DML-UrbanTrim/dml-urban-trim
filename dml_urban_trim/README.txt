@@ -15,7 +15,18 @@ Setup:
 4. Start the site with: npm start
 5. Open: http://localhost:3000
 
-The real booking database/availability layer will be added separately so a paid transaction is not mistaken for a confirmed appointment until the availability system is in place.
+Haircut slots are reserved before checkout and confirmed only after Paystack sends a verified payment webhook.
+
+BOOKING DATABASE (SUPABASE)
+1. Create a Supabase project and open its SQL Editor.
+2. Run the complete contents of supabase-schema.sql.
+3. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to your Vercel environment variables.
+   The service-role key is server-only: never place it in HTML or browser JavaScript.
+4. In your Paystack dashboard, set the webhook URL to:
+   https://your-domain.com/api/paystack-webhook
+
+The API holds a haircut time for 15 minutes while payment is pending. A verified
+Paystack charge.success webhook changes the appointment to confirmed.
 
 
 LOCAL TESTING
