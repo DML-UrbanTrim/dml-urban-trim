@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quote Requested | DML Urban Trim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main>
+    <section class="page-hero compact">
+      <div class="container reveal visible">
+        <p class="eyebrow"><span></span> HAIR TINTING REQUEST</p>
+        <h1>Your quote is <em>requested.</em></h1>
+        <p>We have saved your request. Please continue the conversation in WhatsApp while we confirm your tinting price.</p>
+        <p id="quoteReference" class="small-note"></p>
+        <p><a class="btn btn-gold" href="my-bookings.html">View My Bookings <span>→</span></a></p>
+      </div>
+    </section>
+  </main>
+  <script>
+    const reference = new URLSearchParams(window.location.search).get("reference");
+    if (reference) document.getElementById("quoteReference").textContent = `Booking reference: ${reference}`;
+  </script>
+</body>
+</html>

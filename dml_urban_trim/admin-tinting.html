@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Tinting Admin | DML Urban Trim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .admin-page { max-width: 1050px; margin: 48px auto; }
+    .quote-card { border: 1px solid rgba(255,255,255,.14); border-radius: 14px; padding: 22px; margin: 16px 0; }
+    .quote-card h2 { margin: 0 0 10px; }
+    .quote-card p { margin: 6px 0; }
+    .quote-price-form { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .quote-price-form input { min-width: 190px; padding: 12px; font: inherit; }
+    .quote-status { font-weight: 700; text-transform: capitalize; }
+  </style>
+</head>
+<body data-require-auth="true">
+  <main class="container admin-page">
+    <p class="eyebrow"><span></span> DML URBAN TRIM ADMIN</p>
+    <h1>Hair tinting <em>quotes.</em></h1>
+    <p id="adminMessage" role="status" aria-live="polite">Loading tinting requests...</p>
+    <div id="quoteList"></div>
+    <p><a class="location-button auth-logout" href="index.html">Log out</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const message = document.getElementById("adminMessage");
+    const quoteList = document.getElementById("quoteList");
+    const escapeHtml = value => String(value || "").replace(/[&<>'"]/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[character]));
+    const formatDate = value => new Date(`${value}T00:00:00`).toLocaleDateString("en-NG", { weekday: "short", day: "numeric", month: "long", year: "numeric" });
+
+    async function adminRequest(path, options = {}) {
+      const { data: { session } } = await window.dmlSupabase.auth.getSession();
+      const response = await fetch(path, {
+        ...options,
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          "Content-Type": "application/json",
+          ...(options.headers || {})
+        }
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Request failed.");
+      return data;
+    }
+
+    async function loadQuotes() {
+      try {
+        const data = await adminRequest("/api/admin-tinting");
+        if (!data.appointments.length) {
+          message.textContent = "There are no Hair Tinting requests yet.";
+          return;
+        }
+        message.textContent = "";
+        quoteList.innerHTML = data.appointments.map(booking => {
+          const priceForm = booking.status === "quote_pending" ? `
+            <form class="quote-price-form" data-reference="${escapeHtml(booking.reference)}">
+              <input type="number" name="amount" min="100" step="1" placeholder="Agreed price in naira" required>
+              <button class="btn btn-gold" type="submit">Send price to customer <span>→</span></button>
+            </form>` : `<p><strong>Quoted price:</strong> ₦${Number(booking.quoted_amount || 0).toLocaleString("en-NG")}</p>`;
+          return `
+            <article class="quote-card">
+              <h2>${escapeHtml(booking.customer_name)}</h2>
+              <p><strong>Phone:</strong> ${escapeHtml(booking.customer_phone)}</p>
+              <p><strong>Email:</strong> ${escapeHtml(booking.customer_email)}</p>
+              <p><strong>Tint colour:</strong> ${escapeHtml(booking.tint_color)}</p>
+              <p><strong>Appointment:</strong> ${formatDate(booking.appointment_date)} at ${escapeHtml(booking.appointment_time)}</p>
+              <p><strong>Location:</strong> ${escapeHtml(booking.address)}</p>
+              ${booking.note ? `<p><strong>Note:</strong> ${escapeHtml(booking.note)}</p>` : ""}
+              <p class="quote-status">Status: ${escapeHtml(booking.status.replace("_", " "))}</p>
+              ${priceForm}
+            </article>`;
+        }).join("");
+
+        quoteList.querySelectorAll(".quote-price-form").forEach(form => {
+          form.addEventListener("submit", async event => {
+            event.preventDefault();
+            const button = form.querySelector("button");
+            button.disabled = true;
+            try {
+              const data = await adminRequest("/api/admin-tinting", {
+                method: "POST",
+                body: JSON.stringify({ reference: form.dataset.reference, amount: form.amount.value })
+              });
+              message.textContent = data.message;
+              loadQuotes();
+            } catch (error) {
+              message.textContent = error.message;
+              button.disabled = false;
+            }
+          });
+        });
+      } catch (error) {
+        message.textContent = error.message || "Unable to load the admin page.";
+      }
+    }
+
+    window.dmlAuthReady.then(loadQuotes);
+  </script>
+</body>
+</html>

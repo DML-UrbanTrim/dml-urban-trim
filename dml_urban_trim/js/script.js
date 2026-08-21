@@ -919,6 +919,46 @@ if (bookingForm) {
         const address =
           customerAddress.value.trim();
 
+        const { data: tintSessionData } =
+          await window.dmlSupabase.auth.getSession();
+
+        const tintSession = tintSessionData.session;
+
+        if (!tintSession) {
+          window.location.assign("account.html?next=booking.html");
+          return;
+        }
+
+        let quoteData;
+
+        try {
+          const quoteResponse = await fetch("/api/tinting-request", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${tintSession.access_token}`
+            },
+            body: JSON.stringify({
+              name: customerName.value.trim(),
+              phone: customerPhone.value.trim(),
+              address,
+              tintColor,
+              date: dateInput.value,
+              time: timeInput.value,
+              note: bookingNote.value.trim()
+            })
+          });
+
+          quoteData = await quoteResponse.json();
+
+          if (!quoteResponse.ok) {
+            throw new Error(quoteData.message || "Unable to send your quote request.");
+          }
+        } catch (error) {
+          bookingMessage.textContent = error.message || "Unable to send your quote request.";
+          return;
+        }
+
         const message = [
 
           "Hey DML Urban Trim 💈",
@@ -930,6 +970,8 @@ if (bookingForm) {
           "",
 
           `Color I want: ${tintColor}`,
+
+          `Booking reference: ${quoteData.reference}`,
 
           `Location: ${address}`,
 
@@ -944,8 +986,15 @@ if (bookingForm) {
           `https://wa.me/2347051679159?text=${encodeURIComponent(message)}`;
 
 
-        window.location.href =
-          whatsappUrl;
+        window.open(
+          whatsappUrl,
+          "_blank",
+          "noopener"
+        );
+
+        window.location.assign(
+          `quote-pending.html?reference=${encodeURIComponent(quoteData.reference)}`
+        );
 
 
         return;
