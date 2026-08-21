@@ -135,9 +135,6 @@ if (bookingForm) {
   let bookingMap = null;
   let locationMarker = null;
 
-  const ogbomoshoCenter = [8.133, 4.244];
-  const serviceRadiusKm = 20;
-
   function isInOgbomoshoServiceArea(latitude, longitude) {
 
     const toRadians = value => value * Math.PI / 180;
