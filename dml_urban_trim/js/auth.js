@@ -95,6 +95,6 @@
 
     event.preventDefault();
     if (window.dmlSupabase) await window.dmlSupabase.auth.signOut();
-    window.location.assign("account.html");
+    window.location.assign("index.html");
   });
 })();
