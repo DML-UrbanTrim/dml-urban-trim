@@ -455,3 +455,8 @@ h1 em, h2 em { color: var(--gold-light); font-style: italic; font-weight: 500; }
 /* Service cards are real buttons so selection works reliably on desktop and mobile. */
 .service-choice { appearance:none; -webkit-appearance:none; font:inherit; text-align:left; color:inherit; width:100%; border-radius:0; }
 .service-choice strong, .service-choice small, .service-choice b { display:block; }
+/* Fallback: never hide page content if JavaScript fails */
+.reveal {
+  opacity: 1 !important;
+  transform: none !important;
+}
