@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account | DML Urban Trim</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .account-card { max-width: 520px; margin: 48px auto; padding: 32px; border: 1px solid rgba(255,255,255,.14); border-radius: 16px; }
+    .account-card input { width: 100%; box-sizing: border-box; margin: 8px 0 16px; padding: 13px; font: inherit; }
+    .account-card button { width: 100%; margin: 8px 0; }
+    .account-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; opacity: .7; }
+    .account-divider::before, .account-divider::after { content: ""; height: 1px; background: currentColor; flex: 1; opacity: .35; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="account-card">
+      <p class="eyebrow"><span></span> DML URBAN TRIM</p>
+      <h1>Book with an <em>account.</em></h1>
+      <p id="accountIntro">Sign in or create an account to continue to your booking.</p>
+      <button class="btn btn-gold" id="googleSignIn" type="button">Continue with Google</button>
+      <div class="account-divider">or</div>
+      <form id="accountForm">
+        <label>Email address</label>
+        <input id="accountEmail" type="email" autocomplete="email" required>
+        <label>Password</label>
+        <input id="accountPassword" type="password" autocomplete="current-password" minlength="8" required>
+        <button class="btn btn-gold" type="submit">Sign in</button>
+      </form>
+      <button class="location-button" id="createAccount" type="button">Create an account instead</button>
+      <p id="accountMessage" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const message = document.getElementById("accountMessage");
+    const next = new URLSearchParams(window.location.search).get("next") || "booking.html";
+    const form = document.getElementById("accountForm");
+    const email = document.getElementById("accountEmail");
+    const password = document.getElementById("accountPassword");
+    const client = window.dmlSupabase;
+
+    function showConfigurationError() {
+      message.textContent = "Account sign-in has not been configured yet. Please add the Supabase Project URL and Publishable key.";
+    }
+    if (!client) showConfigurationError();
+
+    document.getElementById("googleSignIn").addEventListener("click", async () => {
+      if (!client) return showConfigurationError();
+      const { error } = await client.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${window.location.origin}/${next}` } });
+      if (error) message.textContent = error.message;
+    });
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!client) return showConfigurationError();
+      const { error } = await client.auth.signInWithPassword({ email: email.value.trim(), password: password.value });
+      if (error) return message.textContent = error.message;
+      window.location.assign(next);
+    });
+
+    document.getElementById("createAccount").addEventListener("click", async () => {
+      if (!client) return showConfigurationError();
+      const { error } = await client.auth.signUp({
+        email: email.value.trim(),
+        password: password.value,
+        options: { emailRedirectTo: `${window.location.origin}/${next}` }
+      });
+      message.textContent = error ? error.message : "Check your email to confirm your account, then sign in.";
+    });
+  </script>
+</body>
+</html>

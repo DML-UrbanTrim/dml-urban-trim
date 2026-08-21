@@ -707,6 +707,20 @@ if (bookingForm) {
 
   async function startHaircutPayment() {
 
+    if (!window.dmlSupabase) {
+      throw new Error("Please sign in before continuing to payment.");
+    }
+
+    const { data: sessionData } =
+      await window.dmlSupabase.auth.getSession();
+
+    const session = sessionData.session;
+
+    if (!session) {
+      window.location.assign("account.html?next=booking.html");
+      throw new Error("Please sign in before continuing to payment.");
+    }
+
     const response =
       await fetch(
         "/api/paystack",
@@ -715,7 +729,9 @@ if (bookingForm) {
 
           headers: {
             "Content-Type":
-              "application/json"
+              "application/json",
+            Authorization:
+              `Bearer ${session.access_token}`
           },
 
           body: JSON.stringify({

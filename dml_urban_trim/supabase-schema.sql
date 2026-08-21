@@ -1,5 +1,6 @@
 create table if not exists public.appointments (
   reference text primary key,
+  user_id uuid references auth.users(id) on delete restrict,
   service text not null,
   customer_name text not null,
   customer_email text not null,
@@ -23,3 +24,6 @@ create unique index if not exists appointments_active_slot_unique
   where status in ('pending', 'confirmed');
 
 alter table public.appointments enable row level security;
+
+alter table public.appointments
+  add column if not exists user_id uuid references auth.users(id) on delete restrict;

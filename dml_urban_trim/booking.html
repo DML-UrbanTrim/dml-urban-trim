@@ -86,7 +86,7 @@
 
 </head>
 
-<body>
+<body data-require-auth="true">
 
 <header class="site-header">
 
@@ -676,6 +676,12 @@
 <!-- Paystack -->
 
 <script src="https://js.paystack.co/v2/inline.js"></script>
+
+<!-- Customer account authentication -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
 
 
 <!-- Your website JavaScript -->

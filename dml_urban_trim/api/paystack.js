@@ -43,6 +43,19 @@ async function database(path, options = {}) {
   return response;
 }
 
+async function authenticatedUser(req) {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const authorization = req.headers.authorization;
+  if (!url || !key || !authorization?.startsWith("Bearer ")) return null;
+
+  const response = await fetch(`${url.replace(/\/$/, "")}/auth/v1/user`, {
+    headers: { apikey: key, Authorization: authorization }
+  });
+  if (!response.ok) return null;
+  return response.json();
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ message: "Method not allowed" });
 
@@ -58,7 +71,12 @@ module.exports = async function handler(req, res) {
     const latitude = Number(body.latitude);
     const longitude = Number(body.longitude);
 
+    const user = await authenticatedUser(req);
+
     if (!secret) throw new Error("Paystack secret key is not configured on the server.");
+    if (!user?.id || !user.email) {
+      return res.status(401).json({ message: "Please sign in before booking an appointment." });
+    }
     if (body.service !== "Haircut" || !email.includes("@") || !name || !phone || !address || !date || !time) {
       return res.status(400).json({ message: "Please complete all required booking details." });
     }
@@ -80,7 +98,7 @@ module.exports = async function handler(req, res) {
       method: "POST",
       headers: { Prefer: "return=minimal" },
       body: JSON.stringify({
-        reference, service: "Haircut", customer_name: name, customer_email: email,
+        reference, user_id: user.id, service: "Haircut", customer_name: name, customer_email: user.email,
         customer_phone: phone, address, latitude, longitude, appointment_date: date,
         appointment_time: time, note: clean(body.note), amount: AMOUNT,
         status: "pending", pending_expires_at: pendingExpiresAt
