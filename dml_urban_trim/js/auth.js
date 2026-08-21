@@ -30,6 +30,28 @@
 
   redirectGuests();
 
+  async function redirectAdmin() {
+    const sessionResult = await window.dmlAuthReady;
+    const session = sessionResult?.data?.session;
+    const currentPage = window.location.pathname.split("/").pop();
+
+    if (!session || currentPage === "admin-tinting.html") return;
+
+    try {
+      const response = await fetch("/api/admin-tinting", {
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+
+      if (response.ok) {
+        window.location.replace("admin-tinting.html");
+      }
+    } catch (error) {
+      console.warn("Admin account check failed:", error);
+    }
+  }
+
+  redirectAdmin();
+
   function showLoginPrompt() {
     let prompt = document.getElementById("authLoginPrompt");
 
