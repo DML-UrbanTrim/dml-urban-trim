@@ -29,4 +29,12 @@
   }
 
   redirectGuests();
+
+  document.querySelectorAll(".auth-logout").forEach(button => {
+    button.addEventListener("click", async event => {
+      event.preventDefault();
+      if (window.dmlSupabase) await window.dmlSupabase.auth.signOut();
+      window.location.assign("account.html");
+    });
+  });
 })();
