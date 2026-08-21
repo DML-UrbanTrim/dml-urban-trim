@@ -6,8 +6,8 @@ create table if not exists public.appointments (
   customer_email text not null,
   customer_phone text not null,
   address text not null,
-  latitude double precision not null,
-  longitude double precision not null,
+  latitude double precision,
+  longitude double precision,
   appointment_date date not null,
   appointment_time text not null,
   note text not null default '',
@@ -27,3 +27,7 @@ alter table public.appointments enable row level security;
 
 alter table public.appointments
   add column if not exists user_id uuid references auth.users(id) on delete restrict;
+
+alter table public.appointments
+  alter column latitude drop not null,
+  alter column longitude drop not null;

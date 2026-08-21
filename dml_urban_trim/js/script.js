@@ -889,33 +889,6 @@ if (bookingForm) {
       }
 
 
-      /*
-       * Require a map location.
-       */
-
-      if (
-        !customerLatitude.value ||
-        !customerLongitude.value
-      ) {
-
-        bookingMessage.textContent =
-          "Please select your exact location on the map or use the current location button.";
-
-        return;
-      }
-
-      if (!isInOgbomoshoServiceArea(
-        Number(customerLatitude.value),
-        Number(customerLongitude.value)
-      )) {
-
-        bookingMessage.textContent =
-          "We currently serve Ogbomosho only. Please select a location within Ogbomosho.";
-
-        return;
-      }
-
-
       /* ================================
          HAIR TINTING
       ================================= */
@@ -931,13 +904,6 @@ if (bookingForm) {
         const address =
           customerAddress.value.trim();
 
-        const latitude =
-          customerLatitude.value;
-
-        const longitude =
-          customerLongitude.value;
-
-
         const message = [
 
           "Hello DML Urban Trim 👋",
@@ -951,8 +917,6 @@ if (bookingForm) {
           `Color I want: ${tintColor}`,
 
           `Location: ${address}`,
-
-          `Map coordinates: ${latitude}, ${longitude}`,
 
           `Date: ${formatDate(dateInput.value)}`,
 

@@ -68,9 +68,6 @@ module.exports = async function handler(req, res) {
     const address = clean(body.address, 300);
     const date = clean(body.date, 10);
     const time = clean(body.time, 30);
-    const latitude = Number(body.latitude);
-    const longitude = Number(body.longitude);
-
     const user = await authenticatedUser(req);
 
     if (!secret) throw new Error("Paystack secret key is not configured on the server.");
@@ -80,13 +77,6 @@ module.exports = async function handler(req, res) {
     if (body.service !== "Haircut" || !email.includes("@") || !name || !phone || !address || !date || !time) {
       return res.status(400).json({ message: "Please complete all required booking details." });
     }
-    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-      return res.status(400).json({ message: "Please select your location on the map." });
-    }
-    if (!isInOgbomoshoServiceArea(latitude, longitude)) {
-      return res.status(400).json({ message: "We currently serve Ogbomosho only. Please select a location within Ogbomosho." });
-    }
-
     await database(`appointments?status=eq.pending&pending_expires_at=lt.${encodeURIComponent(new Date().toISOString())}`, { method: "DELETE" });
 
     const reference = `dml_${crypto.randomUUID().replace(/-/g, "")}`;
@@ -99,7 +89,7 @@ module.exports = async function handler(req, res) {
       headers: { Prefer: "return=minimal" },
       body: JSON.stringify({
         reference, user_id: user.id, service: "Haircut", customer_name: name, customer_email: user.email,
-        customer_phone: phone, address, latitude, longitude, appointment_date: date,
+        customer_phone: phone, address, appointment_date: date,
         appointment_time: time, note: clean(body.note), amount: AMOUNT,
         status: "pending", pending_expires_at: pendingExpiresAt
       })
