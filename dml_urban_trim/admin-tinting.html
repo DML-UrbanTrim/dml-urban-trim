@@ -1,109 +1,791 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Tinting Admin | DML Urban Trim</title>
+  <title>Bookings Admin | DML Urban Trim</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
   <link rel="stylesheet" href="css/style.css">
+
   <style>
-    .admin-page { max-width: 1050px; margin: 48px auto; }
-    .quote-card { border: 1px solid rgba(255,255,255,.14); border-radius: 14px; padding: 22px; margin: 16px 0; }
-    .quote-card h2 { margin: 0 0 10px; }
-    .quote-card p { margin: 6px 0; }
-    .quote-price-form { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
-    .quote-price-form input { min-width: 190px; padding: 12px; font: inherit; }
-    .quote-status { font-weight: 700; text-transform: capitalize; }
+    .admin-page {
+      max-width: 1050px;
+      margin: 48px auto;
+    }
+
+    .admin-header {
+      margin-bottom: 30px;
+    }
+
+    .admin-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 28px 0;
+    }
+
+    .admin-stat {
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .admin-stat span {
+      display: block;
+      font-size: .82rem;
+      opacity: .7;
+      margin-bottom: 6px;
+    }
+
+    .admin-stat strong {
+      font-size: 1.7rem;
+    }
+
+    .booking-card {
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 14px;
+      padding: 22px;
+      margin: 16px 0;
+    }
+
+    .booking-card h2 {
+      margin: 0 0 8px;
+    }
+
+    .booking-card p {
+      margin: 6px 0;
+      line-height: 1.5;
+    }
+
+    .booking-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .booking-service {
+      display: inline-block;
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      opacity: .75;
+      margin-bottom: 5px;
+    }
+
+    .booking-status {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: capitalize;
+      white-space: nowrap;
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    .booking-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px 24px;
+    }
+
+    .booking-detail {
+      padding: 8px 0;
+    }
+
+    .booking-detail span {
+      display: block;
+      font-size: .78rem;
+      opacity: .65;
+      margin-bottom: 3px;
+    }
+
+    .booking-detail strong {
+      display: block;
+      word-break: break-word;
+    }
+
+    .booking-note {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+
+    .booking-note strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .quote-price-form {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+
+    .quote-price-form input {
+      min-width: 190px;
+      padding: 12px;
+      font: inherit;
+    }
+
+    .quote-info {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+
+    .admin-empty {
+      border: 1px dashed rgba(255,255,255,.18);
+      border-radius: 14px;
+      padding: 28px;
+      text-align: center;
+      opacity: .8;
+    }
+
+    .admin-actions {
+      margin-top: 28px;
+    }
+
+    @media (max-width: 700px) {
+      .admin-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .booking-card-header {
+        flex-direction: column;
+      }
+
+      .booking-details {
+        grid-template-columns: 1fr;
+      }
+
+      .quote-price-form {
+        flex-direction: column;
+      }
+
+      .quote-price-form input,
+      .quote-price-form button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
+
 <body data-require-auth="true">
+
   <main class="container admin-page">
-    <p class="eyebrow"><span></span> DML URBAN TRIM ADMIN</p>
-    <h1>Hair tinting <em>quotes.</em></h1>
-    <p id="adminMessage" role="status" aria-live="polite">Loading tinting requests...</p>
-    <div id="quoteList"></div>
-    <p><a class="location-button auth-logout" href="index.html">Log out</a></p>
+
+    <div class="admin-header">
+      <p class="eyebrow">
+        <span></span> DML URBAN TRIM ADMIN
+      </p>
+
+      <h1>
+        All <em>bookings.</em>
+      </h1>
+
+      <p>
+        View haircut appointments and hair tinting requests from one place.
+      </p>
+    </div>
+
+
+    <p
+      id="adminMessage"
+      role="status"
+      aria-live="polite"
+    >
+      Loading bookings...
+    </p>
+
+
+    <div class="admin-summary">
+
+      <div class="admin-stat">
+        <span>Total bookings</span>
+        <strong id="totalBookings">0</strong>
+      </div>
+
+      <div class="admin-stat">
+        <span>Haircuts</span>
+        <strong id="totalHaircuts">0</strong>
+      </div>
+
+      <div class="admin-stat">
+        <span>Hair tinting</span>
+        <strong id="totalTinting">0</strong>
+      </div>
+
+    </div>
+
+
+    <div id="bookingList"></div>
+
+
+    <div class="admin-actions">
+      <a
+        class="location-button auth-logout"
+        href="index.html"
+      >
+        Log out
+      </a>
+    </div>
+
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js"></script>
-  <script src="js/auth.js"></script>
-  <script>
-    const message = document.getElementById("adminMessage");
-    const quoteList = document.getElementById("quoteList");
-    const escapeHtml = value => String(value || "").replace(/[&<>'"]/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[character]));
-    const formatDate = value => new Date(`${value}T00:00:00`).toLocaleDateString("en-NG", { weekday: "short", day: "numeric", month: "long", year: "numeric" });
 
-    async function adminRequest(path, options = {}) {
-      const { data: { session } } = await window.dmlSupabase.auth.getSession();
-      const response = await fetch(path, {
-        ...options,
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          "Content-Type": "application/json",
-          ...(options.headers || {})
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="js/supabase-config.js"></script>
+
+  <script src="js/auth.js"></script>
+
+
+  <script>
+    const message =
+      document.getElementById("adminMessage");
+
+    const bookingList =
+      document.getElementById("bookingList");
+
+    const totalBookings =
+      document.getElementById("totalBookings");
+
+    const totalHaircuts =
+      document.getElementById("totalHaircuts");
+
+    const totalTinting =
+      document.getElementById("totalTinting");
+
+
+    function escapeHtml(value) {
+      return String(value || "").replace(
+        /[&<>'"]/g,
+        character => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "'": "&#39;",
+          '"': "&quot;"
+        }[character])
+      );
+    }
+
+
+    function formatDate(value) {
+      if (!value) {
+        return "Not provided";
+      }
+
+      return new Date(
+        `${value}T00:00:00`
+      ).toLocaleDateString(
+        "en-NG",
+        {
+          weekday: "short",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
         }
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Request failed.");
+      );
+    }
+
+
+    function formatAmount(amount) {
+      const value = Number(amount || 0);
+
+      if (!value) {
+        return "₦0";
+      }
+
+      return `₦${value.toLocaleString("en-NG")}`;
+    }
+
+
+    function formatStatus(status) {
+      return String(status || "unknown")
+        .replace(/_/g, " ");
+    }
+
+
+    async function adminRequest(
+      path,
+      options = {}
+    ) {
+
+      const {
+        data: { session }
+      } = await window.dmlSupabase.auth.getSession();
+
+
+      if (!session) {
+        throw new Error(
+          "Your admin session has expired. Please sign in again."
+        );
+      }
+
+
+      const response =
+        await fetch(
+          path,
+          {
+            ...options,
+
+            headers: {
+              Authorization:
+                `Bearer ${session.access_token}`,
+
+              "Content-Type":
+                "application/json",
+
+              ...(options.headers || {})
+            }
+          }
+        );
+
+
+      let data;
+
+      try {
+        data =
+          await response.json();
+      } catch {
+        throw new Error(
+          "The server returned an invalid response."
+        );
+      }
+
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+          "Request failed."
+        );
+      }
+
+
       return data;
     }
 
-    async function loadQuotes() {
+
+    function renderBooking(booking) {
+
+      const isTinting =
+        booking.service === "Hair Tinting";
+
+      const quotedAmount =
+        Number(
+          booking.quoted_amount || 0
+        );
+
+
+      let quoteSection = "";
+
+
+      if (isTinting) {
+
+        if (
+          booking.status ===
+          "quote_pending"
+        ) {
+
+          quoteSection = `
+            <form
+              class="quote-price-form"
+              data-reference="${escapeHtml(booking.reference)}"
+            >
+
+              <input
+                type="number"
+                name="amount"
+                min="100"
+                step="1"
+                placeholder="Agreed price in naira"
+                required
+              >
+
+              <button
+                class="btn btn-gold"
+                type="submit"
+              >
+                Send price to customer
+                <span>→</span>
+              </button>
+
+            </form>
+          `;
+
+        } else if (
+          quotedAmount > 0
+        ) {
+
+          quoteSection = `
+            <div class="quote-info">
+              <p>
+                <strong>Quoted price:</strong>
+                ${formatAmount(
+                  quotedAmount / 100
+                )}
+              </p>
+
+              ${
+                booking.quote_set_at
+                  ? `
+                    <p>
+                      <strong>Price set:</strong>
+                      ${new Date(
+                        booking.quote_set_at
+                      ).toLocaleString("en-NG")}
+                    </p>
+                  `
+                  : ""
+              }
+            </div>
+          `;
+        }
+      }
+
+
+      return `
+        <article class="booking-card">
+
+          <div class="booking-card-header">
+
+            <div>
+
+              <span class="booking-service">
+                ${escapeHtml(
+                  booking.service
+                )}
+              </span>
+
+              <h2>
+                ${escapeHtml(
+                  booking.customer_name
+                )}
+              </h2>
+
+            </div>
+
+            <span class="booking-status">
+              ${escapeHtml(
+                formatStatus(
+                  booking.status
+                )
+              )}
+            </span>
+
+          </div>
+
+
+          <div class="booking-details">
+
+            <div class="booking-detail">
+              <span>Phone / WhatsApp</span>
+              <strong>
+                ${escapeHtml(
+                  booking.customer_phone
+                )}
+              </strong>
+            </div>
+
+
+            <div class="booking-detail">
+              <span>Email</span>
+              <strong>
+                ${escapeHtml(
+                  booking.customer_email
+                )}
+              </strong>
+            </div>
+
+
+            <div class="booking-detail">
+              <span>Appointment date</span>
+              <strong>
+                ${formatDate(
+                  booking.appointment_date
+                )}
+              </strong>
+            </div>
+
+
+            <div class="booking-detail">
+              <span>Appointment time</span>
+              <strong>
+                ${escapeHtml(
+                  booking.appointment_time
+                )}
+              </strong>
+            </div>
+
+
+            <div class="booking-detail">
+              <span>Location</span>
+              <strong>
+                ${escapeHtml(
+                  booking.address
+                )}
+              </strong>
+            </div>
+
+
+            <div class="booking-detail">
+              <span>Amount</span>
+              <strong>
+                ${
+                  isTinting &&
+                  booking.status ===
+                  "quote_pending"
+                    ? "Awaiting quote"
+                    : formatAmount(
+                        Number(
+                          booking.amount || 0
+                        ) / 100
+                      )
+                }
+              </strong>
+            </div>
+
+
+            ${
+              isTinting
+                ? `
+                  <div class="booking-detail">
+                    <span>Tint colour</span>
+                    <strong>
+                      ${escapeHtml(
+                        booking.tint_color ||
+                        "Not provided"
+                      )}
+                    </strong>
+                  </div>
+                `
+                : ""
+            }
+
+
+            ${
+              booking.reference
+                ? `
+                  <div class="booking-detail">
+                    <span>Booking reference</span>
+                    <strong>
+                      ${escapeHtml(
+                        booking.reference
+                      )}
+                    </strong>
+                  </div>
+                `
+                : ""
+            }
+
+          </div>
+
+
+          ${
+            booking.note
+              ? `
+                <div class="booking-note">
+                  <strong>Customer note</strong>
+                  <p>
+                    ${escapeHtml(
+                      booking.note
+                    )}
+                  </p>
+                </div>
+              `
+              : ""
+          }
+
+
+          ${quoteSection}
+
+        </article>
+      `;
+    }
+
+
+    function attachQuoteForms() {
+
+      bookingList
+        .querySelectorAll(
+          ".quote-price-form"
+        )
+        .forEach(form => {
+
+          form.addEventListener(
+            "submit",
+            async event => {
+
+              event.preventDefault();
+
+
+              const button =
+                form.querySelector(
+                  "button"
+                );
+
+              const amountInput =
+                form.querySelector(
+                  "input[name='amount']"
+                );
+
+
+              button.disabled =
+                true;
+
+
+              try {
+
+                const data =
+                  await adminRequest(
+                    "/api/admin-tinting",
+                    {
+                      method: "POST",
+
+                      body:
+                        JSON.stringify({
+                          reference:
+                            form.dataset.reference,
+
+                          amount:
+                            amountInput.value
+                        })
+                    }
+                  );
+
+
+                message.textContent =
+                  data.message;
+
+
+                await loadBookings();
+
+              } catch (error) {
+
+                message.textContent =
+                  error.message;
+
+                button.disabled =
+                  false;
+              }
+            }
+          );
+        });
+    }
+
+
+    async function loadBookings() {
+
       try {
-        const data = await adminRequest("/api/admin-tinting");
-        if (!data.appointments.length) {
-          message.textContent = "There are no Hair Tinting requests yet.";
+
+        message.textContent =
+          "Loading bookings...";
+
+
+        const data =
+          await adminRequest(
+            "/api/admin-tinting"
+          );
+
+
+        const appointments =
+          Array.isArray(
+            data.appointments
+          )
+            ? data.appointments
+            : [];
+
+
+        const haircutCount =
+          appointments.filter(
+            booking =>
+              booking.service ===
+              "Haircut"
+          ).length;
+
+
+        const tintingCount =
+          appointments.filter(
+            booking =>
+              booking.service ===
+              "Hair Tinting"
+          ).length;
+
+
+        totalBookings.textContent =
+          appointments.length;
+
+        totalHaircuts.textContent =
+          haircutCount;
+
+        totalTinting.textContent =
+          tintingCount;
+
+
+        if (!appointments.length) {
+
+          message.textContent = "";
+
+          bookingList.innerHTML = `
+            <div class="admin-empty">
+              No bookings have been made yet.
+            </div>
+          `;
+
           return;
         }
-        message.textContent = "";
-        quoteList.innerHTML = data.appointments.map(booking => {
-          const priceForm = booking.status === "quote_pending" ? `
-            <form class="quote-price-form" data-reference="${escapeHtml(booking.reference)}">
-              <input type="number" name="amount" min="100" step="1" placeholder="Agreed price in naira" required>
-              <button class="btn btn-gold" type="submit">Send price to customer <span>→</span></button>
-            </form>` : `<p><strong>Quoted price:</strong> ₦${Number(booking.quoted_amount || 0).toLocaleString("en-NG")}</p>`;
-          return `
-            <article class="quote-card">
-              <h2>${escapeHtml(booking.customer_name)}</h2>
-              <p><strong>Phone:</strong> ${escapeHtml(booking.customer_phone)}</p>
-              <p><strong>Email:</strong> ${escapeHtml(booking.customer_email)}</p>
-              <p><strong>Tint colour:</strong> ${escapeHtml(booking.tint_color)}</p>
-              <p><strong>Appointment:</strong> ${formatDate(booking.appointment_date)} at ${escapeHtml(booking.appointment_time)}</p>
-              <p><strong>Location:</strong> ${escapeHtml(booking.address)}</p>
-              ${booking.note ? `<p><strong>Note:</strong> ${escapeHtml(booking.note)}</p>` : ""}
-              <p class="quote-status">Status: ${escapeHtml(booking.status.replace("_", " "))}</p>
-              ${priceForm}
-            </article>`;
-        }).join("");
 
-        quoteList.querySelectorAll(".quote-price-form").forEach(form => {
-          form.addEventListener("submit", async event => {
-            event.preventDefault();
-            const button = form.querySelector("button");
-            button.disabled = true;
-            try {
-              const data = await adminRequest("/api/admin-tinting", {
-                method: "POST",
-                body: JSON.stringify({ reference: form.dataset.reference, amount: form.amount.value })
-              });
-              message.textContent = data.message;
-              loadQuotes();
-            } catch (error) {
-              message.textContent = error.message;
-              button.disabled = false;
-            }
-          });
-        });
+
+        message.textContent = "";
+
+
+        bookingList.innerHTML =
+          appointments
+            .map(renderBooking)
+            .join("");
+
+
+        attachQuoteForms();
+
       } catch (error) {
-        message.textContent = error.message || "Unable to load the admin page.";
+
+        console.error(
+          "Admin booking error:",
+          error
+        );
+
+
+        message.textContent =
+          error.message ||
+          "Unable to load the admin page.";
       }
     }
 
-    window.dmlAuthReady.then(loadQuotes);
+
+    window.dmlAuthReady.then(
+      loadBookings
+    );
   </script>
+
 </body>
 </html>
+```
