@@ -1,3 +1,18 @@
+if (!window.dmlAuthReady && !window.dmlAuthLoader) {
+  const loadScript = source => new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = source;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+
+  window.dmlAuthLoader = loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2")
+    .then(() => loadScript("js/supabase-config.js"))
+    .then(() => loadScript("js/auth.js"))
+    .catch(error => console.warn("Account controls could not be loaded:", error));
+}
+
 const menuToggle = document.querySelector(".menu-toggle");
 const siteNav = document.querySelector(".site-nav");
 
