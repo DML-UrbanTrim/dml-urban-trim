@@ -777,7 +777,8 @@ if (bookingForm) {
 
     if (
       !response.ok ||
-      !data.accessCode
+      !data.accessCode ||
+      !data.reference
     ) {
 
       throw new Error(
@@ -787,24 +788,54 @@ if (bookingForm) {
     }
 
 
-    if (
-      typeof PaystackPop ===
-      "undefined"
-    ) {
-
-      throw new Error(
-        "Paystack could not be loaded. Please refresh the page and try again."
-      );
+    if (typeof PaystackPop === "undefined") {
+      throw new Error("Paystack could not be loaded. Please refresh the page and try again.");
     }
 
+    const popup = new PaystackPop();
+    popup.resumeTransaction(data.accessCode);
+    watchForPaymentConfirmation(data.reference);
+  }
 
-    const popup =
-      new PaystackPop();
 
+  /* ================================
+     PAYSTACK PAYMENT STATUS
+  ================================= */
 
-    popup.resumeTransaction(
-      data.accessCode
-    );
+  function watchForPaymentConfirmation(reference) {
+
+    const startedAt = Date.now();
+    const timeoutMs = 5 * 60 * 1000;
+
+    const checkPayment = async () => {
+
+      try {
+
+        const response = await fetch(
+          `/api/paystack-verify?reference=${encodeURIComponent(reference)}`
+        );
+
+        if (response.ok) {
+
+          window.location.assign(
+            `payment-success.html?reference=${encodeURIComponent(reference)}`
+          );
+
+          return;
+        }
+
+      } catch (error) {
+
+        // A temporary network error should not interrupt the checkout popup.
+        console.warn("Payment confirmation check failed:", error);
+      }
+
+      if (Date.now() - startedAt < timeoutMs) {
+        window.setTimeout(checkPayment, 3000);
+      }
+    };
+
+    window.setTimeout(checkPayment, 3000);
   }
 
 

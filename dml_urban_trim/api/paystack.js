@@ -106,7 +106,11 @@ module.exports = async function handler(req, res) {
       throw new Error(result.message || "Paystack could not initialize the transaction.");
     }
 
-    return res.status(200).json({ accessCode: result.data.access_code, reference });
+    return res.status(200).json({
+      accessCode: result.data.access_code,
+      authorizationUrl: result.data.authorization_url,
+      reference
+    });
   } catch (error) {
     console.error("Booking initialization error:", error);
     const unavailable = String(error.message).includes("duplicate key");
