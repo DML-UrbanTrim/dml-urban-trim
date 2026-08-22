@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,138 +16,16 @@
 
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- Paystack -->
   <script src="https://js.paystack.co/v2/inline.js"></script>
-
-  <style>
-    .booking-history {
-      max-width: 850px;
-      margin: 48px auto;
-      padding-bottom: 40px;
-    }
-
-    .history-home {
-      margin-bottom: 30px;
-    }
-
-    .history-home a {
-      text-decoration: none;
-    }
-
-    .history-item {
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 14px;
-      padding: 20px;
-      margin: 14px 0;
-    }
-
-    .history-item h2 {
-      margin: 0 0 8px;
-    }
-
-    .history-item p {
-      margin: 7px 0;
-    }
-
-    .history-status {
-      text-transform: capitalize;
-      font-weight: 700;
-    }
-
-    .history-reference {
-      font-size: 13px;
-      opacity: .75;
-      word-break: break-word;
-    }
-
-    .quoted-price {
-      margin-top: 18px;
-      padding: 16px;
-      border-radius: 10px;
-      border: 1px solid rgba(214,170,89,.35);
-      background: rgba(214,170,89,.08);
-    }
-
-    .quoted-price-label {
-      display: block;
-      font-size: 14px;
-      opacity: .8;
-    }
-
-    .quoted-price strong {
-      display: block;
-      font-size: 24px;
-      margin-top: 5px;
-    }
-
-    .quote-message {
-      margin-top: 8px !important;
-      font-size: 14px;
-      opacity: .8;
-    }
-
-    .history-pay-button {
-      margin-top: 16px;
-      width: 100%;
-      cursor: pointer;
-      border: none;
-    }
-
-    .history-pay-button:disabled {
-      opacity: .65;
-      cursor: not-allowed;
-    }
-
-    .payment-message {
-      margin-top: 12px !important;
-      font-size: 14px;
-    }
-
-    .history-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 24px;
-    }
-
-    @media (max-width: 600px) {
-
-      .booking-history {
-        margin: 30px auto;
-        padding: 0 18px 40px;
-      }
-
-      .history-item {
-        padding: 16px;
-      }
-
-      .history-actions {
-        flex-direction: column;
-      }
-
-      .history-actions a {
-        width: 100%;
-        text-align: center;
-        box-sizing: border-box;
-      }
-    }
-  </style>
 </head>
 
-<body data-require-auth="true">
+<body>
 
   <main class="container booking-history">
 
-    <!-- HOME -->
-
     <div class="history-home">
-      <a href="index.html">
-        ← Back to Home
-      </a>
+      <a href="index.html">← Back to Home</a>
     </div>
-
-
-    <!-- PAGE HEADER -->
 
     <p class="eyebrow">
       <span></span> YOUR ACCOUNT
@@ -166,13 +43,7 @@
       Loading your bookings...
     </p>
 
-
-    <!-- BOOKINGS -->
-
     <div id="bookingHistory"></div>
-
-
-    <!-- ACTIONS -->
 
     <div class="history-actions">
 
@@ -205,6 +76,124 @@
   <script src="js/auth.js"></script>
 
 
+  <style>
+
+    .booking-history {
+      max-width: 850px;
+      margin: 48px auto;
+      padding-bottom: 50px;
+    }
+
+    .history-home {
+      margin-bottom: 30px;
+    }
+
+    .history-home a {
+      text-decoration: none;
+    }
+
+    .history-item {
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 14px;
+      padding: 20px;
+      margin: 14px 0;
+    }
+
+    .history-item h2 {
+      margin: 0 0 8px;
+    }
+
+    .history-item p {
+      margin: 7px 0;
+    }
+
+    .history-status {
+      text-transform: capitalize;
+      font-weight: 700;
+    }
+
+    .history-reference {
+      font-size: 13px;
+      opacity: .7;
+      word-break: break-word;
+    }
+
+    .price-box {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(214,170,89,.35);
+      background: rgba(214,170,89,.08);
+    }
+
+    .price-label {
+      display: block;
+      font-size: 13px;
+      opacity: .75;
+      margin-bottom: 5px;
+    }
+
+    .price-value {
+      display: block;
+      font-size: 25px;
+      font-weight: 700;
+    }
+
+    .price-note {
+      font-size: 14px;
+      opacity: .75;
+    }
+
+    .pay-button {
+      width: 100%;
+      margin-top: 15px;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .pay-button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .payment-message {
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 600px) {
+
+      .booking-history {
+        margin: 30px auto;
+        padding: 0 18px 40px;
+      }
+
+      .history-item {
+        padding: 16px;
+      }
+
+      .history-actions {
+        flex-direction: column;
+      }
+
+      .history-actions a {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+      }
+
+    }
+
+  </style>
+
+
   <script>
 
     const message =
@@ -214,53 +203,9 @@
       document.getElementById("bookingHistory");
 
 
-    /* =====================================
-       DATE
-    ===================================== */
-
-    function formatDate(value) {
-
-      if (!value) {
-        return "Date not available";
-      }
-
-      return new Date(
-        `${value}T00:00:00`
-      ).toLocaleDateString(
-        "en-NG",
-        {
-          weekday: "short",
-          day: "numeric",
-          month: "long",
-          year: "numeric"
-        }
-      );
-    }
-
-
-    /* =====================================
-       MONEY
-    ===================================== */
-
-    function formatMoney(amount) {
-
-      const naira =
-        Number(amount || 0) / 100;
-
-      if (
-        !Number.isFinite(naira) ||
-        naira <= 0
-      ) {
-        return null;
-      }
-
-      return `₦${naira.toLocaleString("en-NG")}`;
-    }
-
-
-    /* =====================================
-       SECURITY
-    ===================================== */
+    /* ==========================================
+       ESCAPE HTML
+    ========================================== */
 
     function escapeHTML(value) {
 
@@ -280,14 +225,166 @@
     }
 
 
-    /* =====================================
-       START HAIR TINTING PAYMENT
-    ===================================== */
+    /* ==========================================
+       FORMAT DATE
+    ========================================== */
+
+    function formatDate(value) {
+
+      if (!value) {
+        return "Date not available";
+      }
+
+      const date =
+        new Date(`${value}T00:00:00`);
+
+      if (Number.isNaN(date.getTime())) {
+        return "Date not available";
+      }
+
+      return date.toLocaleDateString(
+        "en-NG",
+        {
+          weekday: "short",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }
+      );
+    }
+
+
+    /* ==========================================
+       FORMAT MONEY
+
+       Supabase stores Paystack amounts
+       in KOBO.
+
+       Example:
+       1500000 kobo = ₦15,000
+    ========================================== */
+
+    function formatMoney(value) {
+
+      const amount =
+        Number(value);
+
+      if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+      ) {
+        return null;
+      }
+
+      return `₦${(
+        amount / 100
+      ).toLocaleString("en-NG")}`;
+    }
+
+
+    /* ==========================================
+       TIMEOUT HELPER
+    ========================================== */
+
+    function withTimeout(
+      promise,
+      milliseconds,
+      errorMessage
+    ) {
+
+      let timeoutId;
+
+      const timeout =
+        new Promise((_, reject) => {
+
+          timeoutId =
+            setTimeout(() => {
+
+              reject(
+                new Error(errorMessage)
+              );
+
+            }, milliseconds);
+
+        });
+
+
+      return Promise.race([
+        promise.finally(() =>
+          clearTimeout(timeoutId)
+        ),
+        timeout
+      ]);
+
+    }
+
+
+    /* ==========================================
+       GET CUSTOMER SESSION
+    ========================================== */
+
+    async function getCustomerSession() {
+
+      if (!window.dmlSupabase) {
+
+        throw new Error(
+          "Supabase is not configured on this website."
+        );
+      }
+
+
+      /*
+       * auth.js creates dmlAuthReady.
+       *
+       * Wait for it if it exists.
+       */
+
+      if (window.dmlAuthReady) {
+
+        try {
+
+          await withTimeout(
+            window.dmlAuthReady,
+            10000,
+            "Account authentication timed out. Please refresh the page."
+          );
+
+        } catch (error) {
+
+          console.warn(
+            "Auth ready check:",
+            error
+          );
+
+        }
+
+      }
+
+
+      const result =
+        await withTimeout(
+          window.dmlSupabase.auth.getSession(),
+          10000,
+          "Unable to check your login session. Please refresh the page."
+        );
+
+
+      return result?.data?.session || null;
+    }
+
+
+    /* ==========================================
+       PAY FOR TINTING
+    ========================================== */
 
     async function payForTinting(
       reference,
       button
     ) {
+
+      const originalText =
+        button.innerHTML;
+
 
       try {
 
@@ -297,20 +394,8 @@
           "Preparing payment...";
 
 
-        if (!window.dmlSupabase) {
-
-          throw new Error(
-            "Account sign-in is not available."
-          );
-        }
-
-
-        const {
-          data: {
-            session
-          }
-        } =
-          await window.dmlSupabase.auth.getSession();
+        const session =
+          await getCustomerSession();
 
 
         if (!session) {
@@ -325,30 +410,47 @@
         }
 
 
+        /*
+         * IMPORTANT:
+         *
+         * The /api/paystack endpoint must now
+         * understand Hair Tinting references
+         * and use the quoted_amount already
+         * stored in the database.
+         */
+
         const response =
-          await fetch(
-            "/api/paystack",
-            {
-              method: "POST",
+          await withTimeout(
 
-              headers: {
-                "Content-Type":
-                  "application/json",
+            fetch(
+              "/api/paystack",
+              {
+                method: "POST",
 
-                Authorization:
-                  `Bearer ${session.access_token}`
-              },
+                headers: {
+                  "Content-Type":
+                    "application/json",
 
-              body:
-                JSON.stringify({
+                  Authorization:
+                    `Bearer ${session.access_token}`
+                },
 
-                  service:
-                    "Hair Tinting",
+                body:
+                  JSON.stringify({
 
-                  reference
+                    service:
+                      "Hair Tinting",
 
-                })
-            }
+                    reference:
+                      reference
+
+                  })
+              }
+            ),
+
+            15000,
+
+            "Payment server took too long to respond. Please try again."
           );
 
 
@@ -364,19 +466,20 @@
           throw new Error(
             "The payment server returned an invalid response."
           );
+
         }
 
 
         if (
           !response.ok ||
-          !data.accessCode ||
-          !data.reference
+          !data.accessCode
         ) {
 
           throw new Error(
             data.message ||
             "Unable to start payment."
           );
+
         }
 
 
@@ -386,8 +489,9 @@
         ) {
 
           throw new Error(
-            "Paystack could not be loaded. Please refresh the page and try again."
+            "Paystack could not be loaded. Please refresh the page."
           );
+
         }
 
 
@@ -411,7 +515,7 @@
       } catch (error) {
 
         console.error(
-          "Hair Tinting payment error:",
+          "Tinting payment error:",
           error
         );
 
@@ -439,20 +543,515 @@
 
         button.disabled = false;
 
-        button.textContent =
-          "Pay Now";
+        button.innerHTML =
+          originalText;
       }
+
     }
 
 
-    /* =====================================
-       PAYMENT CONFIRMATION
-    ===================================== */
+    /* ==========================================
+       CHECK PAYMENT
+    ========================================== */
 
     function watchForPaymentConfirmation(
       reference
     ) {
 
       const startedAt =
-        Date
-    }    
+        Date.now();
+
+      const timeout =
+        5 * 60 * 1000;
+
+
+      async function checkPayment() {
+
+        try {
+
+          const response =
+            await fetch(
+              `/api/paystack-verify?reference=${encodeURIComponent(
+                reference
+              )}`
+            );
+
+
+          if (response.ok) {
+
+            window.location.assign(
+              `payment-success.html?reference=${encodeURIComponent(
+                reference
+              )}`
+            );
+
+            return;
+          }
+
+        } catch (error) {
+
+          console.warn(
+            "Payment verification check:",
+            error
+          );
+
+        }
+
+
+        if (
+          Date.now() -
+          startedAt <
+          timeout
+        ) {
+
+          setTimeout(
+            checkPayment,
+            3000
+          );
+
+        }
+
+      }
+
+
+      setTimeout(
+        checkPayment,
+        3000
+      );
+
+    }
+
+
+    /* ==========================================
+       LOAD BOOKINGS
+    ========================================== */
+
+    async function loadHistory() {
+
+      try {
+
+        message.textContent =
+          "Checking your account...";
+
+
+        const session =
+          await getCustomerSession();
+
+
+        if (!session) {
+
+          message.textContent =
+            "Please log in to view your bookings.";
+
+          setTimeout(() => {
+
+            window.location.assign(
+              "account.html?next=my-bookings.html"
+            );
+
+          }, 1200);
+
+          return;
+        }
+
+
+        message.textContent =
+          "Loading your bookings...";
+
+
+        /*
+         * Give the API a maximum of 15 seconds.
+         * This prevents the page from staying
+         * on Loading forever.
+         */
+
+        const response =
+          await withTimeout(
+
+            fetch(
+              "/api/my-bookings",
+              {
+                method: "GET",
+
+                headers: {
+                  Authorization:
+                    `Bearer ${session.access_token}`,
+
+                  Accept:
+                    "application/json"
+                },
+
+                cache:
+                  "no-store"
+              }
+            ),
+
+            15000,
+
+            "The booking server took too long to respond. Please refresh the page."
+          );
+
+
+        let data;
+
+        try {
+
+          data =
+            await response.json();
+
+        } catch {
+
+          throw new Error(
+            "The booking server returned an invalid response."
+          );
+
+        }
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.message ||
+            `Unable to load bookings. Server returned ${response.status}.`
+          );
+
+        }
+
+
+        if (
+          !data ||
+          !Array.isArray(
+            data.appointments
+          )
+        ) {
+
+          throw new Error(
+            "The booking server returned an unexpected response."
+          );
+
+        }
+
+
+        if (
+          data.appointments.length === 0
+        ) {
+
+          message.textContent =
+            "You have not made any bookings yet.";
+
+          history.innerHTML = "";
+
+          return;
+        }
+
+
+        message.textContent = "";
+
+
+        history.innerHTML =
+          data.appointments
+            .map(booking => {
+
+              const service =
+                escapeHTML(
+                  booking.service ||
+                  "Service"
+                );
+
+
+              const date =
+                formatDate(
+                  booking.appointment_date
+                );
+
+
+              const time =
+                escapeHTML(
+                  booking.appointment_time ||
+                  "Time not available"
+                );
+
+
+              const status =
+                escapeHTML(
+                  String(
+                    booking.status ||
+                    "pending"
+                  ).replaceAll(
+                    "_",
+                    " "
+                  )
+                );
+
+
+              const reference =
+                escapeHTML(
+                  booking.reference ||
+                  "Not available"
+                );
+
+
+              const isTinting =
+                booking.service ===
+                "Hair Tinting";
+
+
+              /*
+               * quoted_amount is stored
+               * in KOBO.
+               */
+
+              const quotedAmount =
+                Number(
+                  booking.quoted_amount
+                );
+
+
+              const hasQuote =
+                isTinting &&
+                Number.isFinite(
+                  quotedAmount
+                ) &&
+                quotedAmount > 0;
+
+
+              const formattedQuote =
+                hasQuote
+                  ? formatMoney(
+                      quotedAmount
+                    )
+                  : null;
+
+
+              let priceHTML = "";
+
+
+              /* ==========================
+                 HAIR TINTING
+              ========================== */
+
+              if (isTinting) {
+
+                if (hasQuote) {
+
+                  priceHTML = `
+
+                    <div class="price-box">
+
+                      <span class="price-label">
+                        Confirmed Hair Tinting Price
+                      </span>
+
+                      <strong class="price-value">
+                        ${formattedQuote}
+                      </strong>
+
+                      <p class="price-note">
+                        Your tinting price has been set by DML Urban Trim.
+                      </p>
+
+                      ${
+                        booking.status ===
+                        "quoted"
+                          ? `
+
+                            <button
+                              type="button"
+                              class="btn btn-gold pay-button"
+                              data-reference="${reference}"
+                            >
+                              Pay ${formattedQuote}
+                              <span>→</span>
+                            </button>
+
+                            <p
+                              class="payment-message"
+                              role="status"
+                              aria-live="polite"
+                            ></p>
+
+                          `
+                          : ""
+                      }
+
+                    </div>
+
+                  `;
+
+                } else {
+
+                  priceHTML = `
+
+                    <div class="price-box">
+
+                      <span class="price-label">
+                        Hair Tinting Price
+                      </span>
+
+                      <strong class="price-value">
+                        Awaiting price
+                      </strong>
+
+                      <p class="price-note">
+                        DML Urban Trim has received your request.
+                        Your final price will appear here when the admin sets it.
+                      </p>
+
+                    </div>
+
+                  `;
+
+                }
+
+              }
+
+
+              /* ==========================
+                 HAIRCUT
+              ========================== */
+
+              else {
+
+                const haircutAmount =
+                  formatMoney(
+                    booking.amount
+                  );
+
+
+                if (haircutAmount) {
+
+                  priceHTML = `
+
+                    <div class="price-box">
+
+                      <span class="price-label">
+                        Booking Price
+                      </span>
+
+                      <strong class="price-value">
+                        ${haircutAmount}
+                      </strong>
+
+                    </div>
+
+                  `;
+
+                }
+
+              }
+
+
+              return `
+
+                <article class="history-item">
+
+                  <h2>
+                    ${service}
+                  </h2>
+
+                  <p>
+                    ${date} at ${time}
+                  </p>
+
+                  <p class="history-status">
+                    Status: ${status}
+                  </p>
+
+                  ${priceHTML}
+
+                  <p class="history-reference">
+                    Reference: ${reference}
+                  </p>
+
+                </article>
+
+              `;
+
+            })
+            .join("");
+
+
+        /*
+         * Connect Pay buttons.
+         */
+
+        history
+          .querySelectorAll(
+            ".pay-button"
+          )
+          .forEach(button => {
+
+            button.addEventListener(
+              "click",
+              () => {
+
+                payForTinting(
+                  button.dataset.reference,
+                  button
+                );
+
+              }
+            );
+
+          });
+
+
+      } catch (error) {
+
+        console.error(
+          "MY BOOKINGS ERROR:",
+          error
+        );
+
+
+        message.textContent =
+          error.message ||
+          "Something went wrong while loading your bookings.";
+
+
+        history.innerHTML = `
+
+          <div
+            class="history-item"
+            style="border-color:rgba(255,80,80,.35);"
+          >
+
+            <h2>
+              Unable to load bookings
+            </h2>
+
+            <p>
+              ${escapeHTML(
+                error.message ||
+                "Please refresh the page and try again."
+              )}
+            </p>
+
+            <button
+              type="button"
+              class="btn btn-gold"
+              onclick="window.location.reload()"
+            >
+              Refresh
+              <span>↻</span>
+            </button>
+
+          </div>
+
+        `;
+
+      }
+
+    }
+
+
+    /* ==========================================
+       START
+    ========================================== */
+
+    loadHistory();
+
+  </script>
+
+</body>
+</html>
