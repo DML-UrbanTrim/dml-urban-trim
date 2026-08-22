@@ -1,243 +1,346 @@
+/* =========================================================
+   DML URBAN TRIM
+   MAIN WEBSITE JAVASCRIPT
+   ========================================================= */
+
+
+/* =========================================================
+   AUTH LOADER
+   ========================================================= */
+
 if (!window.dmlAuthReady && !window.dmlAuthLoader) {
+
   const loadScript = source => new Promise((resolve, reject) => {
+
     const script = document.createElement("script");
+
     script.src = source;
+
     script.onload = resolve;
+
     script.onerror = reject;
+
     document.head.appendChild(script);
+
   });
 
-  window.dmlAuthLoader = loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2")
+
+  window.dmlAuthLoader = loadScript(
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  )
     .then(() => loadScript("js/supabase-config.js"))
     .then(() => loadScript("js/auth.js"))
-    .catch(error => console.warn("Account controls could not be loaded:", error));
+    .catch(error => {
+
+      console.warn(
+        "Account controls could not be loaded:",
+        error
+      );
+
+    });
+
 }
 
-const menuToggle = document.querySelector(".menu-toggle");
-const siteNav = document.querySelector(".site-nav");
+
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
+
+const menuToggle =
+  document.querySelector(".menu-toggle");
+
+const siteNav =
+  document.querySelector(".site-nav");
+
 
 if (menuToggle && siteNav) {
+
   menuToggle.addEventListener("click", () => {
-    const open = siteNav.classList.toggle("open");
-    menuToggle.setAttribute("aria-expanded", String(open));
+
+    const open =
+      siteNav.classList.toggle("open");
+
+    menuToggle.setAttribute(
+      "aria-expanded",
+      String(open)
+    );
+
   });
+
 
   siteNav.querySelectorAll("a").forEach(link => {
+
     link.addEventListener("click", () => {
+
       siteNav.classList.remove("open");
-      menuToggle.setAttribute("aria-expanded", "false");
+
+      menuToggle.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
     });
+
   });
+
 }
 
 
-/* ================================
+/* =========================================================
    SCROLL REVEAL
-================================ */
+   ========================================================= */
 
-const observer = new IntersectionObserver(
-  entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
-        observer.unobserve(entry.target);
+if ("IntersectionObserver" in window) {
+
+  const observer =
+    new IntersectionObserver(
+      entries => {
+
+        entries.forEach(entry => {
+
+          if (entry.isIntersecting) {
+
+            entry.target.classList.add("visible");
+
+            observer.unobserve(
+              entry.target
+            );
+
+          }
+
+        });
+
+      },
+      {
+        threshold: 0.12
       }
+    );
+
+
+  document
+    .querySelectorAll(".reveal")
+    .forEach(element => {
+
+      observer.observe(element);
+
     });
-  },
-  { threshold: 0.12 }
-);
 
-document.querySelectorAll(".reveal").forEach(element => {
-  observer.observe(element);
-});
+}
 
 
-/* ================================
+/* =========================================================
    FOOTER YEAR
-================================ */
+   ========================================================= */
 
-const yearElement = document.querySelector(".year");
+const yearElement =
+  document.querySelector(".year");
+
 
 if (yearElement) {
-  yearElement.textContent = new Date().getFullYear();
+
+  yearElement.textContent =
+    new Date().getFullYear();
+
 }
 
 
-/* ================================
+/* =========================================================
    BOOKING PAGE
-================================ */
+   ========================================================= */
 
-const bookingForm = document.getElementById("bookingForm");
+const bookingForm =
+  document.getElementById("bookingForm");
+
 
 if (bookingForm) {
 
+  /* -------------------------------------------------------
+     ELEMENTS
+     ------------------------------------------------------- */
+
   const serviceChoices =
-    bookingForm.querySelectorAll(".service-choice");
+    bookingForm.querySelectorAll(
+      ".service-choice"
+    );
+
 
   const dateInput =
-    document.getElementById("bookingDate");
+    document.getElementById(
+      "bookingDate"
+    );
+
 
   const timeInput =
-    document.getElementById("bookingTime");
+    document.getElementById(
+      "bookingTime"
+    );
+
 
   const summaryService =
-    document.getElementById("summaryService");
+    document.getElementById(
+      "summaryService"
+    );
+
 
   const summaryServiceLine =
-    document.getElementById("summaryServiceLine");
+    document.getElementById(
+      "summaryServiceLine"
+    );
+
 
   const summaryDate =
-    document.getElementById("summaryDate");
+    document.getElementById(
+      "summaryDate"
+    );
+
 
   const summaryTime =
-    document.getElementById("summaryTime");
+    document.getElementById(
+      "summaryTime"
+    );
+
 
   const summaryPrice =
-    document.getElementById("summaryPrice");
+    document.getElementById(
+      "summaryPrice"
+    );
+
 
   const summaryStatus =
-    document.getElementById("summaryStatus");
+    document.getElementById(
+      "summaryStatus"
+    );
+
 
   const bookingSummary =
-    document.getElementById("bookingSummary");
+    document.getElementById(
+      "bookingSummary"
+    );
+
 
   const bookingMessage =
-    document.getElementById("bookingMessage");
+    document.getElementById(
+      "bookingMessage"
+    );
+
 
   const submitButton =
-    bookingForm.querySelector(".booking-submit");
+    bookingForm.querySelector(
+      ".booking-submit"
+    );
+
 
   const customerName =
-    document.getElementById("customerName");
+    document.getElementById(
+      "customerName"
+    );
+
 
   const customerPhone =
-    document.getElementById("customerPhone");
+    document.getElementById(
+      "customerPhone"
+    );
+
 
   const customerEmail =
-    document.getElementById("customerEmail");
+    document.getElementById(
+      "customerEmail"
+    );
+
 
   const customerAddress =
-    document.getElementById("customerAddress");
+    document.getElementById(
+      "customerAddress"
+    );
 
-  const customerLatitude =
-    document.getElementById("customerLatitude");
-
-  const customerLongitude =
-    document.getElementById("customerLongitude");
 
   const bookingNote =
-    document.getElementById("bookingNote");
+    document.getElementById(
+      "bookingNote"
+    );
+
 
   const tintColorGroup =
-    document.getElementById("tintColorGroup");
+    document.getElementById(
+      "tintColorGroup"
+    );
+
 
   const tintColorInput =
-    document.getElementById("tintColor");
+    document.getElementById(
+      "tintColor"
+    );
 
-  const useLocationButton =
-    document.getElementById("useLocationButton");
 
-  const locationStatus =
-    document.getElementById("locationStatus");
-
-  const bookingMapElement =
-    document.getElementById("bookingMap");
-
+  /* -------------------------------------------------------
+     SELECTED SERVICE
+     ------------------------------------------------------- */
 
   let selectedService = "";
-  let selectedPrice = null;
 
-  let bookingMap = null;
-  let locationMarker = null;
-
-  function isInOgbomoshoServiceArea(latitude, longitude) {
-
-    const toRadians = value => value * Math.PI / 180;
-    const latitudeDifference = toRadians(latitude - ogbomoshoCenter[0]);
-    const longitudeDifference = toRadians(longitude - ogbomoshoCenter[1]);
-    const a =
-      Math.sin(latitudeDifference / 2) ** 2 +
-      Math.cos(toRadians(ogbomoshoCenter[0])) *
-      Math.cos(toRadians(latitude)) *
-      Math.sin(longitudeDifference / 2) ** 2;
-    const distance = 2 * 6371 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return Number.isFinite(latitude) &&
-      Number.isFinite(longitude) &&
-      distance <= serviceRadiusKm;
-  }
-
-  // Ogbomosho city centre. Increase this only if you expand your service area.
-  const ogbomoshoCenter = [8.133, 4.244];
-  const serviceRadiusKm = 20;
-
-  function distanceFromOgbomosho(latitude, longitude) {
-
-    const toRadians = value => value * Math.PI / 180;
-    const earthRadiusKm = 6371;
-    const latitudeDifference = toRadians(latitude - ogbomoshoCenter[0]);
-    const longitudeDifference = toRadians(longitude - ogbomoshoCenter[1]);
-    const a =
-      Math.sin(latitudeDifference / 2) ** 2 +
-      Math.cos(toRadians(ogbomoshoCenter[0])) *
-      Math.cos(toRadians(latitude)) *
-      Math.sin(longitudeDifference / 2) ** 2;
-
-    return 2 * earthRadiusKm * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  }
-
-  function isInOgbomoshoServiceArea(latitude, longitude) {
-
-    return Number.isFinite(latitude) &&
-      Number.isFinite(longitude) &&
-      distanceFromOgbomosho(latitude, longitude) <= serviceRadiusKm;
-  }
+  let selectedPrice = 0;
 
 
-  /* ================================
+  /* =======================================================
      DATE
-  ================================= */
+     ======================================================= */
 
-  const today = new Date();
+  const today =
+    new Date();
 
-  const localToday = new Date(
-    today.getTime() -
-    today.getTimezoneOffset() * 60000
-  )
-    .toISOString()
-    .split("T")[0];
+
+  const localToday =
+    new Date(
+      today.getTime() -
+      today.getTimezoneOffset() * 60000
+    )
+      .toISOString()
+      .split("T")[0];
+
 
   if (dateInput) {
-    dateInput.min = localToday;
+
+    dateInput.min =
+      localToday;
+
   }
 
 
-  /* ================================
+  /* =======================================================
      DATE FORMAT
-  ================================= */
+     ======================================================= */
 
   function formatDate(value) {
 
     if (!value) {
+
       return "Not selected";
+
     }
 
-    const date = new Date(
-      value + "T00:00:00"
+
+    const date =
+      new Date(
+        `${value}T00:00:00`
+      );
+
+
+    return date.toLocaleDateString(
+      "en-NG",
+      {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      }
     );
 
-    return date.toLocaleDateString("en-NG", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric"
-    });
   }
 
 
-  /* ================================
+  /* =======================================================
      BOOKING SUMMARY
-  ================================= */
+     ======================================================= */
 
   function updateSummary() {
 
@@ -246,8 +349,10 @@ if (bookingForm) {
       summaryService.textContent =
         "Choose a service";
 
+
       summaryServiceLine.textContent =
         "Not selected";
+
 
       summaryPrice.textContent =
         "Not selected";
@@ -257,28 +362,51 @@ if (bookingForm) {
       summaryService.textContent =
         selectedService;
 
+
       summaryServiceLine.textContent =
         selectedService;
 
-      summaryPrice.textContent =
-        selectedPrice > 0
-          ? `₦${selectedPrice.toLocaleString("en-NG")}`
-          : "Contact for price";
+
+      if (selectedPrice > 0) {
+
+        summaryPrice.textContent =
+          `₦${selectedPrice.toLocaleString("en-NG")}`;
+
+      } else {
+
+        summaryPrice.textContent =
+          "Contact for price";
+
+      }
+
     }
 
 
-    summaryDate.textContent =
-      formatDate(dateInput.value);
+    if (dateInput) {
 
-    summaryTime.textContent =
-      timeInput.value || "Not selected";
+      summaryDate.textContent =
+        formatDate(
+          dateInput.value
+        );
+
+    }
 
 
-    const ready = Boolean(
-      selectedService &&
-      dateInput.value &&
-      timeInput.value
-    );
+    if (timeInput) {
+
+      summaryTime.textContent =
+        timeInput.value ||
+        "Not selected";
+
+    }
+
+
+    const ready =
+      Boolean(
+        selectedService &&
+        dateInput?.value &&
+        timeInput?.value
+      );
 
 
     if (!selectedService) {
@@ -295,446 +423,176 @@ if (bookingForm) {
 
       summaryStatus.textContent =
         "Select your date and time to continue.";
+
     }
 
 
-    bookingSummary.classList.toggle(
-      "is-ready",
-      ready
-    );
+    if (bookingSummary) {
+
+      bookingSummary.classList.toggle(
+        "is-ready",
+        ready
+      );
+
+    }
+
   }
 
 
-  /* ================================
+  /* =======================================================
      SERVICE SELECTION
-  ================================= */
+     ======================================================= */
 
   serviceChoices.forEach(choice => {
 
-    choice.addEventListener("click", () => {
+    choice.addEventListener(
+      "click",
+      () => {
 
-      serviceChoices.forEach(item => {
+        serviceChoices.forEach(item => {
 
-        item.classList.remove("selected");
+          item.classList.remove(
+            "selected"
+          );
 
-        item.setAttribute(
-          "aria-pressed",
-          "false"
+
+          item.setAttribute(
+            "aria-pressed",
+            "false"
+          );
+
+        });
+
+
+        choice.classList.add(
+          "selected"
         );
-      });
 
 
-      choice.classList.add("selected");
-
-      choice.setAttribute(
-        "aria-pressed",
-        "true"
-      );
+        choice.setAttribute(
+          "aria-pressed",
+          "true"
+        );
 
 
-      selectedService =
-        choice.dataset.service;
-
-      selectedPrice =
-        Number(choice.dataset.price) || 0;
+        selectedService =
+          choice.dataset.service ||
+          "";
 
 
-      const isTinting =
-        selectedService === "Hair Tinting";
+        selectedPrice =
+          Number(
+            choice.dataset.price
+          ) || 0;
 
 
-      if (tintColorGroup) {
-        tintColorGroup.hidden = !isTinting;
-      }
+        const isTinting =
+          selectedService ===
+          "Hair Tinting";
 
-      if (tintColorInput) {
-        tintColorInput.required =
-          isTinting;
 
-        if (!isTinting) {
-          tintColorInput.value = "";
+        if (tintColorGroup) {
+
+          tintColorGroup.hidden =
+            !isTinting;
+
         }
+
+
+        if (tintColorInput) {
+
+          tintColorInput.required =
+            isTinting;
+
+
+          if (!isTinting) {
+
+            tintColorInput.value =
+              "";
+
+          }
+
+        }
+
+
+        if (bookingMessage) {
+
+          bookingMessage.textContent =
+            "";
+
+        }
+
+
+        updateSummary();
+
       }
+    );
 
-
-      bookingMessage.textContent = "";
-
-      updateSummary();
-    });
   });
 
 
+  /* =======================================================
+     DATE / TIME CHANGES
+     ======================================================= */
+
   if (dateInput) {
+
     dateInput.addEventListener(
       "change",
       updateSummary
     );
+
   }
 
+
   if (timeInput) {
+
     timeInput.addEventListener(
       "change",
       updateSummary
     );
+
   }
 
 
-  /* ================================
-     MAP
-  ================================= */
-
-  function setLocation(
-    latitude,
-    longitude,
-    source = "map"
-  ) {
-
-    if (!bookingMap) {
-      return;
-    }
-
-    if (!isInOgbomoshoServiceArea(latitude, longitude)) {
-
-      locationStatus.textContent =
-        "We currently serve Ogbomosho only. Please select a location within Ogbomosho.";
-
-      return;
-    }
-
-
-    const latLng = [
-      latitude,
-      longitude
-    ];
-
-
-    if (locationMarker) {
-
-      locationMarker.setLatLng(
-        latLng
-      );
-
-    } else {
-
-      locationMarker =
-        L.marker(latLng, {
-          draggable: true
-        }).addTo(bookingMap);
-
-
-      locationMarker.on(
-        "dragend",
-        () => {
-
-          const position =
-            locationMarker.getLatLng();
-
-          saveCoordinates(
-            position.lat,
-            position.lng
-          );
-
-          reverseGeocode(
-            position.lat,
-            position.lng
-          );
-        }
-      );
-    }
-
-
-    bookingMap.setView(
-      latLng,
-      17
-    );
-
-
-    saveCoordinates(
-      latitude,
-      longitude
-    );
-
-
-    reverseGeocode(
-      latitude,
-      longitude
-    );
-
-
-    if (source === "current") {
-
-      locationStatus.textContent =
-        "Your current location has been selected.";
-
-    } else {
-
-      locationStatus.textContent =
-        "Location selected. You can drag the pin to adjust it.";
-    }
-  }
-
-
-  function saveCoordinates(
-    latitude,
-    longitude
-  ) {
-
-    if (customerLatitude) {
-      customerLatitude.value =
-        latitude.toFixed(7);
-    }
-
-    if (customerLongitude) {
-      customerLongitude.value =
-        longitude.toFixed(7);
-    }
-  }
-
-
-  /* ================================
-     REVERSE GEOCODING
-  ================================= */
-
-  async function reverseGeocode(
-    latitude,
-    longitude
-  ) {
-
-    try {
-
-      locationStatus.textContent =
-        "Finding the address...";
-
-
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}`
-      );
-
-
-      if (!response.ok) {
-        throw new Error(
-          "Unable to find address"
-        );
-      }
-
-
-      const data =
-        await response.json();
-
-
-      if (
-        data &&
-        data.display_name
-      ) {
-
-        customerAddress.value =
-          data.display_name;
-
-        locationStatus.textContent =
-          "Location selected successfully. You can edit the address if needed.";
-
-      } else {
-
-        locationStatus.textContent =
-          "Location selected. Please enter the address manually.";
-      }
-
-    } catch (error) {
-
-      console.error(
-        "Address lookup error:",
-        error
-      );
-
-      locationStatus.textContent =
-        "Location selected. Please enter your address manually.";
-    }
-  }
-
-
-  /* ================================
-     INITIALIZE MAP
-  ================================= */
-
-  function initializeMap() {
-
-    if (!bookingMapElement) {
-      return;
-    }
-
-
-    if (
-      typeof L === "undefined"
-    ) {
-
-      locationStatus.textContent =
-        "Map could not be loaded. Please refresh the page.";
-
-      return;
-    }
-
-
-    bookingMap = L.map(
-      bookingMapElement
-    ).setView(
-      ogbomoshoCenter,
-      13
-    );
-
-
-    L.tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
-        maxZoom: 19,
-        attribution:
-          '&copy; OpenStreetMap contributors'
-      }
-    ).addTo(
-      bookingMap
-    );
-
-
-    locationStatus.textContent =
-      "Click anywhere on the map to select your exact location.";
-
-
-    bookingMap.on(
-      "click",
-      event => {
-
-        setLocation(
-          event.latlng.lat,
-          event.latlng.lng
-        );
-      }
-    );
-  }
-
-
-  initializeMap();
-
-
-  /* ================================
-     CURRENT LOCATION BUTTON
-  ================================= */
-
-  if (useLocationButton) {
-
-    useLocationButton.addEventListener(
-      "click",
-      () => {
-
-        if (
-          !navigator.geolocation
-        ) {
-
-          locationStatus.textContent =
-            "Your browser does not support location services.";
-
-          return;
-        }
-
-
-        useLocationButton.disabled =
-          true;
-
-        locationStatus.textContent =
-          "Getting your current location...";
-
-
-        navigator.geolocation.getCurrentPosition(
-
-          position => {
-
-            const latitude =
-              position.coords.latitude;
-
-            const longitude =
-              position.coords.longitude;
-
-
-            setLocation(
-              latitude,
-              longitude,
-              "current"
-            );
-
-
-            useLocationButton.disabled =
-              false;
-          },
-
-
-          error => {
-
-            console.error(
-              "Geolocation error:",
-              error
-            );
-
-
-            useLocationButton.disabled =
-              false;
-
-
-            if (
-              error.code === 1
-            ) {
-
-              locationStatus.textContent =
-                "Location permission was denied. Please allow location access in your browser.";
-
-            } else if (
-              error.code === 2
-            ) {
-
-              locationStatus.textContent =
-                "Your location could not be determined. Please select your location on the map.";
-
-            } else if (
-              error.code === 3
-            ) {
-
-              locationStatus.textContent =
-                "Location request timed out. Please try again.";
-
-            } else {
-
-              locationStatus.textContent =
-                "Unable to get your location. Please select it on the map.";
-            }
-          },
-
-          {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 0
-          }
-        );
-      }
-    );
-  }
-
-
-  /* ================================
-     PAYSTACK
-  ================================= */
+  /* =======================================================
+     PAYSTACK - HAIRCUT PAYMENT
+     ======================================================= */
 
   async function startHaircutPayment() {
 
     if (!window.dmlSupabase) {
-      throw new Error("Please sign in before continuing to payment.");
+
+      throw new Error(
+        "Please sign in before continuing to payment."
+      );
+
     }
 
-    const { data: sessionData } =
+
+    const {
+      data: sessionData
+    } =
       await window.dmlSupabase.auth.getSession();
 
-    const session = sessionData.session;
+
+    const session =
+      sessionData?.session;
+
 
     if (!session) {
-      window.location.assign("account.html?next=booking.html");
-      throw new Error("Please sign in before continuing to payment.");
+
+      window.location.assign(
+        "account.html?next=booking.html"
+      );
+
+
+      throw new Error(
+        "Please sign in before continuing to payment."
+      );
+
     }
+
 
     const response =
       await fetch(
@@ -745,47 +603,56 @@ if (bookingForm) {
           headers: {
             "Content-Type":
               "application/json",
+
             Authorization:
               `Bearer ${session.access_token}`
           },
 
           body: JSON.stringify({
 
-            service: "Haircut",
+            service:
+              "Haircut",
 
-            amount: 7000,
+            amount:
+              7000,
 
             email:
-              customerEmail.value.trim(),
-
-            name:
-              customerName.value.trim(),
-
-            phone:
-              customerPhone.value.trim(),
-
-            address:
-              customerAddress.value.trim(),
-
-            latitude:
-              customerLatitude
-                ? customerLatitude.value
+              customerEmail
+                ? customerEmail.value.trim()
                 : "",
 
-            longitude:
-              customerLongitude
-                ? customerLongitude.value
+            name:
+              customerName
+                ? customerName.value.trim()
+                : "",
+
+            phone:
+              customerPhone
+                ? customerPhone.value.trim()
+                : "",
+
+            address:
+              customerAddress
+                ? customerAddress.value.trim()
                 : "",
 
             date:
-              dateInput.value,
+              dateInput
+                ? dateInput.value
+                : "",
 
             time:
-              timeInput.value,
+              timeInput
+                ? timeInput.value
+                : "",
 
             note:
-              bookingNote.value.trim()
+              bookingNote
+                ? bookingNote.value.trim()
+                : ""
+
           })
+
         }
       );
 
@@ -803,6 +670,7 @@ if (bookingForm) {
       throw new Error(
         "The payment server returned an invalid response."
       );
+
     }
 
 
@@ -816,63 +684,113 @@ if (bookingForm) {
         data.message ||
         "Unable to start payment. Please try again."
       );
+
     }
 
 
-    if (typeof PaystackPop === "undefined") {
-      throw new Error("Paystack could not be loaded. Please refresh the page and try again.");
+    if (
+      typeof PaystackPop ===
+      "undefined"
+    ) {
+
+      throw new Error(
+        "Paystack could not be loaded. Please refresh the page and try again."
+      );
+
     }
 
-    const popup = new PaystackPop();
-    popup.resumeTransaction(data.accessCode);
-    watchForPaymentConfirmation(data.reference);
+
+    const popup =
+      new PaystackPop();
+
+
+    popup.resumeTransaction(
+      data.accessCode
+    );
+
+
+    watchForPaymentConfirmation(
+      data.reference
+    );
+
   }
 
 
-  /* ================================
+  /* =======================================================
      PAYSTACK PAYMENT STATUS
-  ================================= */
+     ======================================================= */
 
-  function watchForPaymentConfirmation(reference) {
+  function watchForPaymentConfirmation(
+    reference
+  ) {
 
-    const startedAt = Date.now();
-    const timeoutMs = 5 * 60 * 1000;
+    const startedAt =
+      Date.now();
 
-    const checkPayment = async () => {
 
-      try {
+    const timeoutMs =
+      5 * 60 * 1000;
 
-        const response = await fetch(
-          `/api/paystack-verify?reference=${encodeURIComponent(reference)}`
-        );
 
-        if (response.ok) {
+    const checkPayment =
+      async () => {
 
-          window.location.assign(
-            `payment-success.html?reference=${encodeURIComponent(reference)}`
+        try {
+
+          const response =
+            await fetch(
+              `/api/paystack-verify?reference=${encodeURIComponent(reference)}`
+            );
+
+
+          if (response.ok) {
+
+            window.location.assign(
+              `payment-success.html?reference=${encodeURIComponent(reference)}`
+            );
+
+
+            return;
+
+          }
+
+        } catch (error) {
+
+          console.warn(
+            "Payment confirmation check failed:",
+            error
           );
 
-          return;
         }
 
-      } catch (error) {
 
-        // A temporary network error should not interrupt the checkout popup.
-        console.warn("Payment confirmation check failed:", error);
-      }
+        if (
+          Date.now() -
+          startedAt <
+          timeoutMs
+        ) {
 
-      if (Date.now() - startedAt < timeoutMs) {
-        window.setTimeout(checkPayment, 3000);
-      }
-    };
+          window.setTimeout(
+            checkPayment,
+            3000
+          );
 
-    window.setTimeout(checkPayment, 3000);
+        }
+
+      };
+
+
+    window.setTimeout(
+      checkPayment,
+      3000
+    );
+
   }
 
 
-  /* ================================
+  /* =======================================================
      FORM SUBMISSION
-  ================================= */
+     ======================================================= */
 
   bookingForm.addEventListener(
     "submit",
@@ -881,9 +799,17 @@ if (bookingForm) {
       event.preventDefault();
 
 
-      bookingMessage.textContent =
-        "";
+      if (bookingMessage) {
 
+        bookingMessage.textContent =
+          "";
+
+      }
+
+
+      /* ---------------------------------------------------
+         SERVICE CHECK
+         --------------------------------------------------- */
 
       if (!selectedService) {
 
@@ -891,8 +817,13 @@ if (bookingForm) {
           "Please select Haircut or Hair Tinting first.";
 
         return;
+
       }
 
+
+      /* ---------------------------------------------------
+         FORM VALIDATION
+         --------------------------------------------------- */
 
       if (
         !bookingForm.checkValidity()
@@ -901,12 +832,13 @@ if (bookingForm) {
         bookingForm.reportValidity();
 
         return;
+
       }
 
 
-      /* ================================
+      /* ===================================================
          HAIR TINTING
-      ================================= */
+         =================================================== */
 
       if (
         selectedService ===
@@ -914,50 +846,133 @@ if (bookingForm) {
       ) {
 
         const tintColor =
-          tintColorInput.value.trim();
+          tintColorInput
+            ? tintColorInput.value.trim()
+            : "";
+
 
         const address =
-          customerAddress.value.trim();
+          customerAddress
+            ? customerAddress.value.trim()
+            : "";
 
-        const { data: tintSessionData } =
+
+        if (!window.dmlSupabase) {
+
+          bookingMessage.textContent =
+            "Please sign in before making a booking.";
+
+          return;
+
+        }
+
+
+        const {
+          data: tintSessionData
+        } =
           await window.dmlSupabase.auth.getSession();
 
-        const tintSession = tintSessionData.session;
+
+        const tintSession =
+          tintSessionData?.session;
+
 
         if (!tintSession) {
-          window.location.assign("account.html?next=booking.html");
+
+          window.location.assign(
+            "account.html?next=booking.html"
+          );
+
           return;
+
         }
+
 
         let quoteData;
 
-        try {
-          const quoteResponse = await fetch("/api/tinting-request", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${tintSession.access_token}`
-            },
-            body: JSON.stringify({
-              name: customerName.value.trim(),
-              phone: customerPhone.value.trim(),
-              address,
-              tintColor,
-              date: dateInput.value,
-              time: timeInput.value,
-              note: bookingNote.value.trim()
-            })
-          });
 
-          quoteData = await quoteResponse.json();
+        try {
+
+          const quoteResponse =
+            await fetch(
+              "/api/tinting-request",
+              {
+                method: "POST",
+
+                headers: {
+
+                  "Content-Type":
+                    "application/json",
+
+                  Authorization:
+                    `Bearer ${tintSession.access_token}`
+
+                },
+
+                body: JSON.stringify({
+
+                  name:
+                    customerName
+                      ? customerName.value.trim()
+                      : "",
+
+                  phone:
+                    customerPhone
+                      ? customerPhone.value.trim()
+                      : "",
+
+                  address,
+
+                  tintColor,
+
+                  date:
+                    dateInput
+                      ? dateInput.value
+                      : "",
+
+                  time:
+                    timeInput
+                      ? timeInput.value
+                      : "",
+
+                  note:
+                    bookingNote
+                      ? bookingNote.value.trim()
+                      : ""
+
+                })
+
+              }
+            );
+
+
+          quoteData =
+            await quoteResponse.json();
+
 
           if (!quoteResponse.ok) {
-            throw new Error(quoteData.message || "Unable to send your quote request.");
+
+            throw new Error(
+              quoteData.message ||
+              "Unable to send your quote request."
+            );
+
           }
+
         } catch (error) {
-          bookingMessage.textContent = error.message || "Unable to send your quote request.";
+
+          bookingMessage.textContent =
+            error.message ||
+            "Unable to send your quote request.";
+
           return;
+
         }
+
+
+        /* -------------------------------------------------
+           WHATSAPP MESSAGE
+           ------------------------------------------------- */
 
         const message = [
 
@@ -992,48 +1007,73 @@ if (bookingForm) {
           "noopener"
         );
 
+
+        /* -------------------------------------------------
+           GO TO QUOTE PENDING PAGE
+           ------------------------------------------------- */
+
         window.location.assign(
-          `quote-pending.html?reference=${encodeURIComponent(quoteData.reference)}`
+          `quote-pending.html?reference=${encodeURIComponent(
+            quoteData.reference
+          )}`
         );
 
 
         return;
+
       }
 
 
-      /* ================================
+      /* ===================================================
          HAIRCUT PAYMENT
-      ================================= */
+         =================================================== */
 
-      submitButton.disabled =
-        true;
+      if (submitButton) {
 
-      submitButton.classList.add(
-        "is-loading"
-      );
+        submitButton.disabled =
+          true;
+
+
+        submitButton.classList.add(
+          "is-loading"
+        );
+
+      }
 
 
       const buttonArrow =
-        submitButton.querySelector(
-          "span"
-        );
+        submitButton
+          ? submitButton.querySelector("span")
+          : null;
 
 
       if (buttonArrow) {
 
         buttonArrow.textContent =
           "…";
+
       }
 
 
-      bookingMessage.textContent =
-        "Preparing your secure payment…";
+      if (bookingMessage) {
+
+        bookingMessage.textContent =
+          "Preparing your secure payment…";
+
+      }
 
 
       try {
 
         await startHaircutPayment();
-        bookingMessage.textContent = "";
+
+
+        if (bookingMessage) {
+
+          bookingMessage.textContent =
+            "";
+
+        }
 
       } catch (error) {
 
@@ -1043,33 +1083,46 @@ if (bookingForm) {
         );
 
 
-        bookingMessage.textContent =
-          error.message ||
-          "Unable to start payment. Please try again.";
+        if (bookingMessage) {
+
+          bookingMessage.textContent =
+            error.message ||
+            "Unable to start payment. Please try again.";
+
+        }
 
       } finally {
 
-        submitButton.disabled =
-          false;
+        if (submitButton) {
 
-        submitButton.classList.remove(
-          "is-loading"
-        );
+          submitButton.disabled =
+            false;
+
+
+          submitButton.classList.remove(
+            "is-loading"
+          );
+
+        }
 
 
         if (buttonArrow) {
 
           buttonArrow.textContent =
             "→";
+
         }
+
       }
+
     }
   );
 
 
-  /* ================================
+  /* =======================================================
      INITIAL SUMMARY
-  ================================= */
+     ======================================================= */
 
   updateSummary();
+
 }

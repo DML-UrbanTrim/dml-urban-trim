@@ -1,60 +1,458 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>My Bookings | DML Urban Trim</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Paystack -->
+  <script src="https://js.paystack.co/v2/inline.js"></script>
+
   <style>
-    .booking-history { max-width: 850px; margin: 48px auto; }
-    .history-item { border: 1px solid rgba(255,255,255,.14); border-radius: 14px; padding: 20px; margin: 14px 0; }
-    .history-item h2 { margin: 0 0 8px; }
-    .history-item p { margin: 5px 0; }
-    .history-status { text-transform: capitalize; font-weight: 700; }
-    .history-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+    .booking-history {
+      max-width: 850px;
+      margin: 48px auto;
+      padding-bottom: 40px;
+    }
+
+    .history-home {
+      margin-bottom: 30px;
+    }
+
+    .history-home a {
+      text-decoration: none;
+    }
+
+    .history-item {
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 14px;
+      padding: 20px;
+      margin: 14px 0;
+    }
+
+    .history-item h2 {
+      margin: 0 0 8px;
+    }
+
+    .history-item p {
+      margin: 7px 0;
+    }
+
+    .history-status {
+      text-transform: capitalize;
+      font-weight: 700;
+    }
+
+    .history-reference {
+      font-size: 13px;
+      opacity: .75;
+      word-break: break-word;
+    }
+
+    .quoted-price {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(214,170,89,.35);
+      background: rgba(214,170,89,.08);
+    }
+
+    .quoted-price-label {
+      display: block;
+      font-size: 14px;
+      opacity: .8;
+    }
+
+    .quoted-price strong {
+      display: block;
+      font-size: 24px;
+      margin-top: 5px;
+    }
+
+    .quote-message {
+      margin-top: 8px !important;
+      font-size: 14px;
+      opacity: .8;
+    }
+
+    .history-pay-button {
+      margin-top: 16px;
+      width: 100%;
+      cursor: pointer;
+      border: none;
+    }
+
+    .history-pay-button:disabled {
+      opacity: .65;
+      cursor: not-allowed;
+    }
+
+    .payment-message {
+      margin-top: 12px !important;
+      font-size: 14px;
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    @media (max-width: 600px) {
+
+      .booking-history {
+        margin: 30px auto;
+        padding: 0 18px 40px;
+      }
+
+      .history-item {
+        padding: 16px;
+      }
+
+      .history-actions {
+        flex-direction: column;
+      }
+
+      .history-actions a {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+      }
+    }
   </style>
 </head>
-<body data-require-auth="true">
-  <main class="container booking-history">
-    <p class="eyebrow"><span></span> YOUR ACCOUNT</p>
-    <h1>Your booking <em>history.</em></h1>
-    <p id="historyMessage" role="status" aria-live="polite">Loading your bookings...</p>
-    <div id="bookingHistory"></div>
-    <div class="history-actions">
-      <a class="btn btn-gold" href="booking.html">Book an appointment <span>→</span></a>
-      <a class="location-button auth-logout" href="account.html">Log out</a>
-    </div>
-  </main>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js"></script>
-  <script src="js/auth.js"></script>
-  <script>
-    const message = document.getElementById("historyMessage");
-    const history = document.getElementById("bookingHistory");
-    const formatDate = value => new Date(`${value}T00:00:00`).toLocaleDateString("en-NG", { weekday: "short", day: "numeric", month: "long", year: "numeric" });
 
-    async function loadHistory() {
-      if (!window.dmlSupabase) return message.textContent = "Account sign-in has not been configured yet.";
-      const { data: { session } } = await window.dmlSupabase.auth.getSession();
-      if (!session) return;
-      const response = await fetch("/api/my-bookings", { headers: { Authorization: `Bearer ${session.access_token}` } });
-      const data = await response.json();
-      if (!response.ok) return message.textContent = data.message || "Unable to load your bookings.";
-      if (!data.appointments.length) return message.textContent = "You have not made any bookings yet.";
-      message.textContent = "";
-      history.innerHTML = data.appointments.map(booking => `
-        <article class="history-item">
-          <h2>${booking.service}</h2>
-          <p>${formatDate(booking.appointment_date)} at ${booking.appointment_time}</p>
-          <p class="history-status">Status: ${booking.status.replace("_", " ")}</p>
-          <p>Reference: ${booking.reference}</p>
-        </article>
-      `).join("");
+<body data-require-auth="true">
+
+  <main class="container booking-history">
+
+    <!-- HOME -->
+
+    <div class="history-home">
+      <a href="index.html">
+        ← Back to Home
+      </a>
+    </div>
+
+
+    <!-- PAGE HEADER -->
+
+    <p class="eyebrow">
+      <span></span> YOUR ACCOUNT
+    </p>
+
+    <h1>
+      Your booking <em>history.</em>
+    </h1>
+
+    <p
+      id="historyMessage"
+      role="status"
+      aria-live="polite"
+    >
+      Loading your bookings...
+    </p>
+
+
+    <!-- BOOKINGS -->
+
+    <div id="bookingHistory"></div>
+
+
+    <!-- ACTIONS -->
+
+    <div class="history-actions">
+
+      <a
+        class="btn btn-gold"
+        href="booking.html"
+      >
+        Book an appointment
+        <span>→</span>
+      </a>
+
+      <a
+        class="location-button auth-logout"
+        href="account.html"
+      >
+        Log out
+      </a>
+
+    </div>
+
+  </main>
+
+
+  <!-- SUPABASE -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="js/supabase-config.js"></script>
+
+  <script src="js/auth.js"></script>
+
+
+  <script>
+
+    const message =
+      document.getElementById("historyMessage");
+
+    const history =
+      document.getElementById("bookingHistory");
+
+
+    /* =====================================
+       DATE
+    ===================================== */
+
+    function formatDate(value) {
+
+      if (!value) {
+        return "Date not available";
+      }
+
+      return new Date(
+        `${value}T00:00:00`
+      ).toLocaleDateString(
+        "en-NG",
+        {
+          weekday: "short",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }
+      );
     }
-    loadHistory();
-  </script>
-</body>
-</html>
+
+
+    /* =====================================
+       MONEY
+    ===================================== */
+
+    function formatMoney(amount) {
+
+      const naira =
+        Number(amount || 0) / 100;
+
+      if (
+        !Number.isFinite(naira) ||
+        naira <= 0
+      ) {
+        return null;
+      }
+
+      return `₦${naira.toLocaleString("en-NG")}`;
+    }
+
+
+    /* =====================================
+       SECURITY
+    ===================================== */
+
+    function escapeHTML(value) {
+
+      if (
+        value === null ||
+        value === undefined
+      ) {
+        return "";
+      }
+
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+
+    /* =====================================
+       START HAIR TINTING PAYMENT
+    ===================================== */
+
+    async function payForTinting(
+      reference,
+      button
+    ) {
+
+      try {
+
+        button.disabled = true;
+
+        button.textContent =
+          "Preparing payment...";
+
+
+        if (!window.dmlSupabase) {
+
+          throw new Error(
+            "Account sign-in is not available."
+          );
+        }
+
+
+        const {
+          data: {
+            session
+          }
+        } =
+          await window.dmlSupabase.auth.getSession();
+
+
+        if (!session) {
+
+          window.location.assign(
+            `account.html?next=${encodeURIComponent(
+              "my-bookings.html"
+            )}`
+          );
+
+          return;
+        }
+
+
+        const response =
+          await fetch(
+            "/api/paystack",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                Authorization:
+                  `Bearer ${session.access_token}`
+              },
+
+              body:
+                JSON.stringify({
+
+                  service:
+                    "Hair Tinting",
+
+                  reference
+
+                })
+            }
+          );
+
+
+        let data;
+
+        try {
+
+          data =
+            await response.json();
+
+        } catch {
+
+          throw new Error(
+            "The payment server returned an invalid response."
+          );
+        }
+
+
+        if (
+          !response.ok ||
+          !data.accessCode ||
+          !data.reference
+        ) {
+
+          throw new Error(
+            data.message ||
+            "Unable to start payment."
+          );
+        }
+
+
+        if (
+          typeof PaystackPop ===
+          "undefined"
+        ) {
+
+          throw new Error(
+            "Paystack could not be loaded. Please refresh the page and try again."
+          );
+        }
+
+
+        const popup =
+          new PaystackPop();
+
+
+        popup.resumeTransaction(
+          data.accessCode
+        );
+
+
+        button.textContent =
+          "Payment window opened";
+
+
+        watchForPaymentConfirmation(
+          data.reference
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Hair Tinting payment error:",
+          error
+        );
+
+
+        const card =
+          button.closest(
+            ".history-item"
+          );
+
+
+        const paymentMessage =
+          card?.querySelector(
+            ".payment-message"
+          );
+
+
+        if (paymentMessage) {
+
+          paymentMessage.textContent =
+            error.message ||
+            "Unable to start payment.";
+
+        }
+
+
+        button.disabled = false;
+
+        button.textContent =
+          "Pay Now";
+      }
+    }
+
+
+    /* =====================================
+       PAYMENT CONFIRMATION
+    ===================================== */
+
+    function watchForPaymentConfirmation(
+      reference
+    ) {
+
+      const startedAt =
+        Date
+    }    
