@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 
-const AMOUNT = 700000; // ₦7,000 in kobo
+const HAIRCUT_AMOUNT = 700000; // ₦7,000 in kobo
 const HOLD_MINUTES = 15;
 
 const OGBOMOSHO_CENTER = {
@@ -10,30 +10,55 @@ const OGBOMOSHO_CENTER = {
 
 const SERVICE_RADIUS_KM = 20;
 
+
+/* =================================
+   HELPERS
+================================= */
+
 function clean(value, max = 500) {
   return typeof value === "string"
     ? value.trim().slice(0, max)
     : "";
 }
 
+
 function isInOgbomoshoServiceArea(latitude, longitude) {
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+
+  if (
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude)
+  ) {
     return false;
   }
 
-  const toRadians = value => value * Math.PI / 180;
+  const toRadians =
+    value => value * Math.PI / 180;
 
   const latitudeDifference =
-    toRadians(latitude - OGBOMOSHO_CENTER.latitude);
+    toRadians(
+      latitude -
+      OGBOMOSHO_CENTER.latitude
+    );
 
   const longitudeDifference =
-    toRadians(longitude - OGBOMOSHO_CENTER.longitude);
+    toRadians(
+      longitude -
+      OGBOMOSHO_CENTER.longitude
+    );
 
   const a =
     Math.sin(latitudeDifference / 2) ** 2 +
-    Math.cos(toRadians(OGBOMOSHO_CENTER.latitude)) *
-    Math.cos(toRadians(latitude)) *
-    Math.sin(longitudeDifference / 2) ** 2;
+    Math.cos(
+      toRadians(
+        OGBOMOSHO_CENTER.latitude
+      )
+    ) *
+    Math.cos(
+      toRadians(latitude)
+    ) *
+    Math.sin(
+      longitudeDifference / 2
+    ) ** 2;
 
   const distance =
     2 *
@@ -51,10 +76,16 @@ function isInOgbomoshoServiceArea(latitude, longitude) {
    DATABASE
 ================================= */
 
-async function database(path, options = {}) {
+async function database(
+  path,
+  options = {}
+) {
 
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url =
+    process.env.SUPABASE_URL;
+
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !key) {
     throw new Error(
@@ -62,32 +93,37 @@ async function database(path, options = {}) {
     );
   }
 
-  const controller = new AbortController();
+  const controller =
+    new AbortController();
 
-  const timeout = setTimeout(() => {
-    controller.abort();
-  }, 15000);
+  const timeout =
+    setTimeout(() => {
+      controller.abort();
+    }, 15000);
 
   try {
 
-    const response = await fetch(
-      `${url.replace(/\/$/, "")}/rest/v1/${path}`,
-      {
-        ...options,
+    const response =
+      await fetch(
+        `${url.replace(/\/$/, "")}/rest/v1/${path}`,
+        {
+          ...options,
 
-        signal: controller.signal,
+          signal: controller.signal,
 
-        headers: {
-          apikey: key,
-          Authorization: `Bearer ${key}`,
-          "Content-Type": "application/json",
-          ...(options.headers || {})
+          headers: {
+            apikey: key,
+            Authorization: `Bearer ${key}`,
+            "Content-Type": "application/json",
+            ...(options.headers || {})
+          }
         }
-      }
-    );
+      );
 
     if (!response.ok) {
-      throw new Error(await response.text());
+      throw new Error(
+        await response.text()
+      );
     }
 
     return response;
@@ -116,8 +152,11 @@ async function database(path, options = {}) {
 
 async function authenticatedUser(req) {
 
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url =
+    process.env.SUPABASE_URL;
+
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   const authorization =
     req.headers.authorization;
@@ -130,25 +169,28 @@ async function authenticatedUser(req) {
     return null;
   }
 
-  const controller = new AbortController();
+  const controller =
+    new AbortController();
 
-  const timeout = setTimeout(() => {
-    controller.abort();
-  }, 10000);
+  const timeout =
+    setTimeout(() => {
+      controller.abort();
+    }, 10000);
 
   try {
 
-    const response = await fetch(
-      `${url.replace(/\/$/, "")}/auth/v1/user`,
-      {
-        signal: controller.signal,
+    const response =
+      await fetch(
+        `${url.replace(/\/$/, "")}/auth/v1/user`,
+        {
+          signal: controller.signal,
 
-        headers: {
-          apikey: key,
-          Authorization: authorization
+          headers: {
+            apikey: key,
+            Authorization: authorization
+          }
         }
-      }
-    );
+      );
 
     if (!response.ok) {
       return null;
@@ -181,76 +223,112 @@ async function initializePaystack({
   secret,
   email,
   reference,
+  amount,
+  service,
   callbackUrl
 }) {
 
-  const controller = new AbortController();
+  const controller =
+    new AbortController();
 
-  const timeout = setTimeout(() => {
-    controller.abort();
-  }, 15000);
+  const timeout =
+    setTimeout(() => {
+      controller.abort();
+    }, 15000);
 
   try {
 
-    const response = await fetch(
-      "https://api.paystack.co/transaction/initialize",
-      {
-        method: "POST",
+    const response =
+      await fetch(
+        "https://api.paystack.co/transaction/initialize",
+        {
+          method: "POST",
 
-        signal: controller.signal,
+          signal: controller.signal,
 
-        headers: {
-          Authorization: `Bearer ${secret}`,
-          "Content-Type": "application/json"
-        },
+          headers: {
+            Authorization:
+              `Bearer ${secret}`,
 
-        body: JSON.stringify({
-          email,
-          amount: String(AMOUNT),
-          currency: "NGN",
-          reference,
-          callback_url: callbackUrl,
+            "Content-Type":
+              "application/json"
+          },
 
-          metadata: {
-            appointment_reference: reference,
-            service: "Haircut"
-          }
-        })
-      }
-    );
+          body: JSON.stringify({
+
+            email,
+
+            amount:
+              String(amount),
+
+            currency:
+              "NGN",
+
+            reference,
+
+            callback_url:
+              callbackUrl,
+
+            metadata: {
+              appointment_reference:
+                reference,
+
+              service
+            }
+
+          })
+        }
+      );
 
     let result;
 
     try {
-      result = await response.json();
+
+      result =
+        await response.json();
+
     } catch {
+
       throw new Error(
         "Paystack returned an invalid response."
       );
+
     }
 
-    if (!response.ok || !result.status) {
+    if (
+      !response.ok ||
+      !result.status
+    ) {
 
       throw new Error(
         result.message ||
         "Paystack could not initialize the payment."
       );
+
     }
 
-    if (!result.data?.access_code) {
+    if (
+      !result.data?.access_code
+    ) {
+
       throw new Error(
         "Paystack did not return a payment access code."
       );
+
     }
 
     return result.data;
 
   } catch (error) {
 
-    if (error.name === "AbortError") {
+    if (
+      error.name === "AbortError"
+    ) {
+
       throw new Error(
         "Paystack took too long to respond. Please try again."
       );
+
     }
 
     throw error;
@@ -267,12 +345,14 @@ async function initializePaystack({
    MAIN HANDLER
 ================================= */
 
-module.exports = async function handler(req, res) {
+module.exports =
+async function handler(req, res) {
 
   if (req.method !== "POST") {
 
     return res.status(405).json({
-      message: "Method not allowed"
+      message:
+        "Method not allowed"
     });
 
   }
@@ -292,7 +372,194 @@ module.exports = async function handler(req, res) {
     }
 
 
-    const body = req.body || {};
+    const body =
+      req.body || {};
+
+
+    /* =================================
+       AUTHENTICATION
+    ================================= */
+
+    const user =
+      await authenticatedUser(req);
+
+    if (
+      !user?.id ||
+      !user.email
+    ) {
+
+      return res.status(401).json({
+        message:
+          "Please sign in before making a payment."
+      });
+
+    }
+
+
+    const service =
+      clean(body.service, 50);
+
+
+    /* =================================
+       HAIR TINTING PAYMENT
+    ================================= */
+
+    if (
+      service === "Hair Tinting"
+    ) {
+
+      const reference =
+        clean(
+          body.reference,
+          120
+        );
+
+      if (!reference) {
+
+        return res.status(400).json({
+          message:
+            "The Hair Tinting booking reference is missing."
+        });
+
+      }
+
+
+      const appointmentResponse =
+        await database(
+          `appointments?reference=eq.${encodeURIComponent(
+            reference
+          )}&user_id=eq.${encodeURIComponent(
+            user.id
+          )}&service=eq.Hair%20Tinting&select=reference,user_id,service,status,quoted_amount,customer_email,appointment_date,appointment_time`
+        );
+
+
+      const appointments =
+        await appointmentResponse.json();
+
+
+      const appointment =
+        appointments?.[0];
+
+
+      if (!appointment) {
+
+        return res.status(404).json({
+          message:
+            "Hair Tinting booking could not be found."
+        });
+
+      }
+
+
+      if (
+        appointment.status !==
+        "quoted"
+      ) {
+
+        return res.status(400).json({
+          message:
+            "This Hair Tinting booking is not ready for payment yet."
+        });
+
+      }
+
+
+      const quotedAmount =
+        Number(
+          appointment.quoted_amount
+        );
+
+
+      if (
+        !Number.isInteger(
+          quotedAmount
+        ) ||
+        quotedAmount < 10000
+      ) {
+
+        return res.status(400).json({
+          message:
+            "A valid Hair Tinting price has not been set yet."
+        });
+
+      }
+
+
+      const protocol =
+        req.headers["x-forwarded-proto"] ||
+        "https";
+
+      const host =
+        req.headers.host;
+
+
+      const siteUrl =
+        (
+          process.env.SITE_URL ||
+          `${protocol}://${host}`
+        ).replace(/\/$/, "");
+
+
+      const callbackUrl =
+        `${siteUrl}/payment-success.html?reference=${encodeURIComponent(
+          reference
+        )}`;
+
+
+      const paystackData =
+        await initializePaystack({
+
+          secret,
+
+          email:
+            user.email,
+
+          reference,
+
+          amount:
+            quotedAmount,
+
+          service:
+            "Hair Tinting",
+
+          callbackUrl
+
+        });
+
+
+      return res.status(200).json({
+
+        success:
+          true,
+
+        accessCode:
+          paystackData.access_code,
+
+        authorizationUrl:
+          paystackData.authorization_url,
+
+        reference
+
+      });
+
+    }
+
+
+    /* =================================
+       HAIRCUT PAYMENT
+    ================================= */
+
+    if (
+      service !== "Haircut"
+    ) {
+
+      return res.status(400).json({
+        message:
+          "Invalid booking service."
+      });
+
+    }
 
 
     const email =
@@ -320,29 +587,7 @@ module.exports = async function handler(req, res) {
       Number(body.longitude);
 
 
-    /* =================================
-       AUTHENTICATION
-    ================================= */
-
-    const user =
-      await authenticatedUser(req);
-
-    if (!user?.id || !user.email) {
-
-      return res.status(401).json({
-        message:
-          "Please sign in before booking an appointment."
-      });
-
-    }
-
-
-    /* =================================
-       VALIDATION
-    ================================= */
-
     if (
-      body.service !== "Haircut" ||
       !email.includes("@") ||
       !name ||
       !phone ||
@@ -377,7 +622,7 @@ module.exports = async function handler(req, res) {
 
 
     /* =================================
-       REMOVE EXPIRED PENDING BOOKINGS
+       REMOVE EXPIRED BOOKINGS
     ================================= */
 
     try {
@@ -387,7 +632,8 @@ module.exports = async function handler(req, res) {
           new Date().toISOString()
         )}`,
         {
-          method: "DELETE"
+          method:
+            "DELETE"
         }
       );
 
@@ -402,7 +648,7 @@ module.exports = async function handler(req, res) {
 
 
     /* =================================
-       CREATE REFERENCE
+       CREATE HAIRCUT REFERENCE
     ================================= */
 
     const reference =
@@ -414,7 +660,9 @@ module.exports = async function handler(req, res) {
     const pendingExpiresAt =
       new Date(
         Date.now() +
-        HOLD_MINUTES * 60 * 1000
+        HOLD_MINUTES *
+        60 *
+        1000
       ).toISOString();
 
 
@@ -424,6 +672,7 @@ module.exports = async function handler(req, res) {
 
     const host =
       req.headers.host;
+
 
     const siteUrl =
       (
@@ -439,82 +688,98 @@ module.exports = async function handler(req, res) {
 
 
     /* =================================
-       CREATE BOOKING
+       CREATE HAIRCUT BOOKING
     ================================= */
 
     await database(
       "appointments",
       {
-        method: "POST",
+        method:
+          "POST",
 
         headers: {
-          Prefer: "return=minimal"
+          Prefer:
+            "return=minimal"
         },
 
-        body: JSON.stringify({
+        body:
+          JSON.stringify({
 
-          reference,
+            reference,
 
-          user_id:
-            user.id,
+            user_id:
+              user.id,
 
-          service:
-            "Haircut",
+            service:
+              "Haircut",
 
-          customer_name:
-            name,
+            customer_name:
+              name,
 
-          customer_email:
-            user.email,
+            customer_email:
+              user.email,
 
-          customer_phone:
-            phone,
+            customer_phone:
+              phone,
 
-          address,
+            address,
 
-          latitude:
-            Number.isFinite(latitude)
-              ? latitude
-              : null,
+            latitude:
+              Number.isFinite(latitude)
+                ? latitude
+                : null,
 
-          longitude:
-            Number.isFinite(longitude)
-              ? longitude
-              : null,
+            longitude:
+              Number.isFinite(longitude)
+                ? longitude
+                : null,
 
-          appointment_date:
-            date,
+            appointment_date:
+              date,
 
-          appointment_time:
-            time,
+            appointment_time:
+              time,
 
-          note:
-            clean(body.note),
+            note:
+              clean(body.note),
 
-          amount:
-            AMOUNT,
+            amount:
+              HAIRCUT_AMOUNT,
 
-          status:
-            "pending",
+            status:
+              "pending",
 
-          pending_expires_at:
-            pendingExpiresAt
+            pending_expires_at:
+              pendingExpiresAt
 
-        })
+          })
+
       }
     );
 
 
     /* =================================
-       INITIALIZE PAYSTACK
+       INITIALIZE HAIRCUT PAYMENT
     ================================= */
 
     const paystackData =
       await initializePaystack({
+
         secret,
-        email: user.email,
+
+        email:
+          user.email,
+
         reference,
+
+        amount:
+          HAIRCUT_AMOUNT,
+
+        service:
+          "Haircut",
+
         callbackUrl
+
       });
 
 
@@ -524,7 +789,8 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({
 
-      success: true,
+      success:
+        true,
 
       accessCode:
         paystackData.access_code,
@@ -540,7 +806,7 @@ module.exports = async function handler(req, res) {
   } catch (error) {
 
     console.error(
-      "Booking initialization error:",
+      "Payment initialization error:",
       error
     );
 
@@ -551,9 +817,9 @@ module.exports = async function handler(req, res) {
 
 
     if (
-      message.toLowerCase().includes(
-        "duplicate key"
-      )
+      message
+        .toLowerCase()
+        .includes("duplicate key")
     ) {
 
       return res.status(409).json({

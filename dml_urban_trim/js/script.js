@@ -325,6 +325,13 @@ if (bookingForm) {
       );
 
 
+    if (Number.isNaN(date.getTime())) {
+
+      return "Not selected";
+
+    }
+
+
     return date.toLocaleDateString(
       "en-NG",
       {
@@ -857,6 +864,46 @@ if (bookingForm) {
             : "";
 
 
+        const name =
+          customerName
+            ? customerName.value.trim()
+            : "";
+
+
+        const phone =
+          customerPhone
+            ? customerPhone.value.trim()
+            : "";
+
+
+        const email =
+          customerEmail
+            ? customerEmail.value.trim()
+            : "";
+
+
+        const date =
+          dateInput
+            ? dateInput.value
+            : "";
+
+
+        const time =
+          timeInput
+            ? timeInput.value
+            : "";
+
+
+        const note =
+          bookingNote
+            ? bookingNote.value.trim()
+            : "";
+
+
+        /* -------------------------------------------------
+           CHECK SUPABASE
+           ------------------------------------------------- */
+
         if (!window.dmlSupabase) {
 
           bookingMessage.textContent =
@@ -866,6 +913,10 @@ if (bookingForm) {
 
         }
 
+
+        /* -------------------------------------------------
+           GET CUSTOMER SESSION
+           ------------------------------------------------- */
 
         const {
           data: tintSessionData
@@ -884,6 +935,44 @@ if (bookingForm) {
           );
 
           return;
+
+        }
+
+
+        /* -------------------------------------------------
+           SEND TINTING REQUEST TO SERVER
+           ------------------------------------------------- */
+
+        if (submitButton) {
+
+          submitButton.disabled =
+            true;
+
+          submitButton.classList.add(
+            "is-loading"
+          );
+
+        }
+
+
+        const buttonArrow =
+          submitButton
+            ? submitButton.querySelector("span")
+            : null;
+
+
+        if (buttonArrow) {
+
+          buttonArrow.textContent =
+            "…";
+
+        }
+
+
+        if (bookingMessage) {
+
+          bookingMessage.textContent =
+            "Preparing your tinting request…";
 
         }
 
@@ -911,34 +1000,21 @@ if (bookingForm) {
 
                 body: JSON.stringify({
 
-                  name:
-                    customerName
-                      ? customerName.value.trim()
-                      : "",
+                  name,
 
-                  phone:
-                    customerPhone
-                      ? customerPhone.value.trim()
-                      : "",
+                  phone,
+
+                  email,
 
                   address,
 
                   tintColor,
 
-                  date:
-                    dateInput
-                      ? dateInput.value
-                      : "",
+                  date,
 
-                  time:
-                    timeInput
-                      ? timeInput.value
-                      : "",
+                  time,
 
-                  note:
-                    bookingNote
-                      ? bookingNote.value.trim()
-                      : ""
+                  note
 
                 })
 
@@ -946,24 +1022,74 @@ if (bookingForm) {
             );
 
 
-          quoteData =
-            await quoteResponse.json();
+          try {
+
+            quoteData =
+              await quoteResponse.json();
+
+          } catch {
+
+            throw new Error(
+              "The tinting server returned an invalid response."
+            );
+
+          }
 
 
           if (!quoteResponse.ok) {
 
             throw new Error(
               quoteData.message ||
-              "Unable to send your quote request."
+              "Unable to send your tinting request."
+            );
+
+          }
+
+
+          if (!quoteData.reference) {
+
+            throw new Error(
+              "The tinting request was created without a booking reference."
             );
 
           }
 
         } catch (error) {
 
-          bookingMessage.textContent =
-            error.message ||
-            "Unable to send your quote request.";
+          console.error(
+            "Tinting request error:",
+            error
+          );
+
+
+          if (bookingMessage) {
+
+            bookingMessage.textContent =
+              error.message ||
+              "Unable to send your tinting request.";
+
+          }
+
+
+          if (submitButton) {
+
+            submitButton.disabled =
+              false;
+
+            submitButton.classList.remove(
+              "is-loading"
+            );
+
+          }
+
+
+          if (buttonArrow) {
+
+            buttonArrow.textContent =
+              "→";
+
+          }
+
 
           return;
 
@@ -971,10 +1097,10 @@ if (bookingForm) {
 
 
         /* -------------------------------------------------
-           WHATSAPP MESSAGE
+           CREATE WHATSAPP MESSAGE
            ------------------------------------------------- */
 
-        const message = [
+        const whatsappMessage = [
 
           "Hey DML Urban Trim 💈",
 
@@ -984,39 +1110,77 @@ if (bookingForm) {
 
           "",
 
+          `Name: ${name}`,
+
+          `Phone: ${phone}`,
+
+          `Email: ${email}`,
+
           `Color I want: ${tintColor}`,
 
           `Booking reference: ${quoteData.reference}`,
 
           `Location: ${address}`,
 
-          `Date: ${formatDate(dateInput.value)}`,
+          `Date: ${formatDate(date)}`,
 
-          `Time: ${timeInput.value}`
+          `Time: ${time}`,
 
-        ].join("\n");
+          note
+            ? `Note: ${note}`
+            : ""
 
+        ]
+          .filter(Boolean)
+          .join("\n");
+
+
+        /* -------------------------------------------------
+           CREATE WHATSAPP URL
+           ------------------------------------------------- */
 
         const whatsappUrl =
-          `https://wa.me/2347051679159?text=${encodeURIComponent(message)}`;
+          `https://wa.me/2347051679159?text=${encodeURIComponent(
+            whatsappMessage
+          )}`;
 
+
+        /* -------------------------------------------------
+           OPEN WHATSAPP
+           ------------------------------------------------- */
 
         window.open(
           whatsappUrl,
           "_blank",
-          "noopener"
+          "noopener,noreferrer"
         );
+
+
+        /* -------------------------------------------------
+           SHOW SUCCESS MESSAGE
+           ------------------------------------------------- */
+
+        if (bookingMessage) {
+
+          bookingMessage.textContent =
+            "Your tinting request has been sent. Opening WhatsApp…";
+
+        }
 
 
         /* -------------------------------------------------
            GO TO QUOTE PENDING PAGE
            ------------------------------------------------- */
 
-        window.location.assign(
-          `quote-pending.html?reference=${encodeURIComponent(
-            quoteData.reference
-          )}`
-        );
+        window.setTimeout(() => {
+
+          window.location.assign(
+            `quote-pending.html?reference=${encodeURIComponent(
+              quoteData.reference
+            )}`
+          );
+
+        }, 700);
 
 
         return;
